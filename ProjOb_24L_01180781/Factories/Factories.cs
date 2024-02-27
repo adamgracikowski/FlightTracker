@@ -39,4 +39,17 @@ namespace ProjOb_24L_01180781.Factories
             );
         }
     }
+    public class CargoFactory
+    : IAviationFactory
+    {
+        public IAviationItem Create(string[] itemDetails)
+        {
+            return new Cargo(
+                id: UInt64.Parse(itemDetails[1]),
+                weight: Single.Parse(itemDetails[2]),
+                code: itemDetails[3],
+                description: itemDetails[4]
+            );
+        }
+    }
 }
