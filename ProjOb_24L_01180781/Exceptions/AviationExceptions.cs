@@ -42,7 +42,7 @@ namespace ProjOb_24L_01180781.Exceptions
         {
             if (message is not null && context is not null)
             {
-                message += $" in file {context.Filename} (in line {context.LineNumber}";
+                message += $" in file {context.Filename} (in line {context.LineNumber})";
             }
             return message;
         }

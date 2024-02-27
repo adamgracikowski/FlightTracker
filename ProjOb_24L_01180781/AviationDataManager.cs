@@ -85,7 +85,7 @@ namespace ProjOb_24L_01180781
             else
             {
                 // not finding the acronym in the dictionary means that the file was ill-formated
-                throw new FtrFormatException($"unknown acronym (${acronym})", context);
+                throw new FtrFormatException($"unknown acronym ({acronym})", context);
             }
         }
 
