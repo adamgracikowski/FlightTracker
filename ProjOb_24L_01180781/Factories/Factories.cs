@@ -23,4 +23,20 @@ namespace ProjOb_24L_01180781.Factories
             );
         }
     }
+    public class PassengerFactory
+    : IAviationFactory
+    {
+        public IAviationItem Create(string[] itemDetails)
+        {
+            return new Passenger(
+                id: UInt64.Parse(itemDetails[1]),
+                name: itemDetails[2],
+                age: UInt64.Parse(itemDetails[3]),
+                phone: itemDetails[4],
+                email: itemDetails[5],
+                planeClass: itemDetails[6],
+                miles: UInt64.Parse(itemDetails[7])
+            );
+        }
+    }
 }
