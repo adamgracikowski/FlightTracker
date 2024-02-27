@@ -12,7 +12,7 @@ namespace ProjOb_24L_01180781
             CultureInfo.DefaultThreadCurrentCulture = englishCulture;
             CultureInfo.DefaultThreadCurrentUICulture = englishCulture;
 
-            var inputFile = "example_data.ftr";
+            var inputFile = GetInputFileFromUser() ?? "example_data.ftr";
             var outputFile = $"{inputFile}.json";
             var separator = ',';
 
@@ -33,6 +33,12 @@ namespace ProjOb_24L_01180781
                 var message = $"unknown exception caught: {ex.Message}";
                 Console.WriteLine(message);
             }
+        }
+        private static string? GetInputFileFromUser()
+        {
+            Console.WriteLine("Please provide the path to the input file: ");
+            var path = Console.ReadLine();
+            return path;
         }
     }
 }
