@@ -66,4 +66,21 @@ namespace ProjOb_24L_01180781.Factories
             );
         }
     }
+    public class PassengerPlaneFactory
+    : IAviationFactory
+    {
+        public IAviationItem Create(string[] itemDetails)
+        {
+            return new PassengerPlane(
+                id: UInt64.Parse(itemDetails[1]),
+                serial: itemDetails[2],
+                country: itemDetails[3],
+                model: itemDetails[4],
+                classSize: new ClassSize(
+                    first: UInt16.Parse(itemDetails[5]),
+                    business: UInt16.Parse(itemDetails[6]),
+                    economy: UInt16.Parse(itemDetails[7]))
+            );
+        }
+    }
 }
