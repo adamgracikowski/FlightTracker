@@ -1,10 +1,38 @@
-﻿namespace ProjOb_24L_01180781
+﻿using ProjOb_24L_01180781.Exceptions;
+using System.Globalization;
+
+namespace ProjOb_24L_01180781
 {
-    internal class Program
+    public class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            // changing culture options so that the decimal separator was set to '.'
+            var englishCulture = new CultureInfo("en-US");
+            CultureInfo.DefaultThreadCurrentCulture = englishCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = englishCulture;
+
+            var inputFile = "example_data.ftr";
+            var outputFile = $"{inputFile}.json";
+            var separator = ',';
+
+            try
+            {
+                var entities = AviationDataManager.ParseFtrFile(inputFile, separator);
+                Console.WriteLine($"file {inputFile} parsed successfully.");
+
+                AviationDataManager.SerializeToJson(entities, inputFile);
+                Console.WriteLine($"collection of objects serialized successfully to {outputFile}.");
+            }
+            catch (AviationException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                var message = $"unknown exception caught: {ex.Message}";
+                Console.WriteLine(message);
+            }
         }
     }
 }
