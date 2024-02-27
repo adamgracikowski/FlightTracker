@@ -12,7 +12,7 @@ namespace ProjOb_24L_01180781
             CultureInfo.DefaultThreadCurrentCulture = englishCulture;
             CultureInfo.DefaultThreadCurrentUICulture = englishCulture;
 
-            var inputFile = GetInputFileFromUser() ?? "example_data.ftr";
+            var inputFile = args.Length > 0 ? args[0] : (GetInputFileFromUser() ?? "example_data.ftr");
             var outputFile = $"{inputFile}.json";
             var separator = ',';
 
