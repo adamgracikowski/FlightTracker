@@ -52,4 +52,18 @@ namespace ProjOb_24L_01180781.Factories
             );
         }
     }
+    public class CargoPlaneFactory
+    : IAviationFactory
+    {
+        public IAviationItem Create(string[] itemDetails)
+        {
+            return new CargoPlane(
+                id: UInt64.Parse(itemDetails[1]),
+                serial: itemDetails[2],
+                country: itemDetails[3],
+                model: itemDetails[4],
+                maxLoad: Single.Parse(itemDetails[5])
+            );
+        }
+    }
 }
