@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "MWyx47yAjq8t5tLOW8oDx7yA431lKrYgFIBcazChpNM7ClpTF/qO6tBAaANFsOz1bDvavqMxVb3If4eOJ13ySA==",
+  "dgSpecHash": "iloQa7UmuMarhF9Tymlz5SS+3VdiSTk1zD1oANbIDB8PlARa6S7g4CqyGHNJurRQEwEML9qB6+YU3IxS9T+Eiw==",
   "success": true,
   "projectFilePath": "C:\\Users\\AG\\Desktop\\Sem4\\Projektowanie Obiektowe\\ProjOb_24L_01180781\\ProjOb_24L_01180781\\ProjOb_24L_01180781.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\AG\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
   "logs": []
 }
