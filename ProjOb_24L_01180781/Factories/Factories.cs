@@ -83,4 +83,21 @@ namespace ProjOb_24L_01180781.Factories
             );
         }
     }
+    public class AirportFactory
+    : IAviationFactory
+    {
+        public IAviationItem Create(string[] itemDetails)
+        {
+            return new Airport(
+                id: UInt64.Parse(itemDetails[1]),
+                name: itemDetails[2],
+                code: itemDetails[3],
+                location: new Location(
+                    longitude: Single.Parse(itemDetails[4]),
+                    latitude: Single.Parse(itemDetails[5]),
+                    amsl: Single.Parse(itemDetails[6])),
+                country: itemDetails[7]
+            );
+        }
+    }
 }
