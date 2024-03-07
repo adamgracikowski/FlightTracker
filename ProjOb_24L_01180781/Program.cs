@@ -1,5 +1,5 @@
-﻿//#define ETAP1
-#define ETAP2
+﻿#define ETAP1
+//#define ETAP2
 
 using System.Globalization;
 
