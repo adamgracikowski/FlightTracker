@@ -11,8 +11,5 @@ namespace ProjOb_24L_01180781.Factories
     /// Represents common characteristics of all the factories, 
     /// which are used in the process of parsing .ftr files.
     /// </summary>
-    public interface IAviationFactory
-    {
-        IAviationItem Create(string[] itemDetails);
-    }
+    public interface IAviationFactory { }
 }
