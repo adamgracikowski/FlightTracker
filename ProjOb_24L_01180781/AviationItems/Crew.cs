@@ -9,7 +9,6 @@ namespace ProjOb_24L_01180781.AviationItems
     public class Crew
         : Person, IAviationItem
     {
-        public static string Acronym => _acronym;
         public UInt16 Practice { get; private set; }
         public string Role { get; private set; }
 
@@ -19,7 +18,5 @@ namespace ProjOb_24L_01180781.AviationItems
             Practice = practice;
             Role = role;
         }
-
-        private static readonly string _acronym = "C";
     }
 }

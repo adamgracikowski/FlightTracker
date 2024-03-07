@@ -9,7 +9,6 @@ namespace ProjOb_24L_01180781.AviationItems
     public class CargoPlane
         : Plane, IAviationItem
     {
-        public static string Acronym => _acronym;
         public Single MaxLoad { get; private set; }
 
         public CargoPlane(UInt64 id, string serial, string country, string model, Single maxLoad)
@@ -17,7 +16,5 @@ namespace ProjOb_24L_01180781.AviationItems
         {
             MaxLoad = maxLoad;
         }
-
-        private static readonly string _acronym = "CP";
     }
 }

@@ -9,7 +9,6 @@ namespace ProjOb_24L_01180781.AviationItems
     public class Airport
         : IAviationItem
     {
-        public static string Acronym => _acronym;
         public UInt64 Id { get; private set; }
         public string Name { get; private set; }
         public string Code { get; private set; }
@@ -24,7 +23,5 @@ namespace ProjOb_24L_01180781.AviationItems
             Location = location;
             Country = country;
         }
-
-        private static readonly string _acronym = "AI";
     }
 }

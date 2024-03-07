@@ -9,7 +9,6 @@ namespace ProjOb_24L_01180781.AviationItems
     public class Passenger
         : Person, IAviationItem
     {
-        public static string Acronym => _acronym;
         public string Class { get; private set; }
         public UInt64 Miles { get; private set; }
 
@@ -19,7 +18,5 @@ namespace ProjOb_24L_01180781.AviationItems
             Class = planeClass;
             Miles = miles;
         }
-
-        private static readonly string _acronym = "P";
     }
 }

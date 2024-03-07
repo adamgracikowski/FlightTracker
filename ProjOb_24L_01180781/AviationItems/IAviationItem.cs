@@ -10,12 +10,5 @@ namespace ProjOb_24L_01180781.AviationItems
     /// Represents common characteristics of all classes,
     /// which instances are stored in .ftr files.
     /// </summary>
-    public interface IAviationItem
-    {
-        /// <summary>
-        /// Uniquely identifies a class, for which details of the instance of the class, 
-        /// are stored in every line of .ftr file.
-        /// </summary>
-        public static string Acronym { get; } = string.Empty;
-    }
+    public interface IAviationItem { }
 }

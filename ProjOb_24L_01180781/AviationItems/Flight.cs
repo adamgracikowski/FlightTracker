@@ -9,7 +9,6 @@ namespace ProjOb_24L_01180781.AviationItems
     public class Flight
         : IAviationItem
     {
-        public static string Acronym => _acronym;
         public UInt64 Id { get; private set; }
         public UInt64 OriginId { get; private set; }
         public UInt64 TargetId { get; private set; }
@@ -33,7 +32,5 @@ namespace ProjOb_24L_01180781.AviationItems
             CrewIds = crewIds;
             LoadIds = loadIds;
         }
-
-        private static readonly string _acronym = "FL";
     }
 }

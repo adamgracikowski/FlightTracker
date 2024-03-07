@@ -8,6 +8,7 @@ namespace ProjOb_24L_01180781.AviationItems
 {
     public struct Location
     {
+        public static readonly Single Unknown = Single.MaxValue;
         public Single Longitude { get; set; }
         public Single Latitude { get; set; }
         public Single Amsl { get; set; }

@@ -9,7 +9,6 @@ namespace ProjOb_24L_01180781.AviationItems
     public class Cargo
         : IAviationItem
     {
-        public static string Acronym => _acronym;
         public UInt64 Id { get; private set; }
         public Single Weight { get; private set; }
         public string Code { get; private set; }
@@ -22,7 +21,5 @@ namespace ProjOb_24L_01180781.AviationItems
             Code = code;
             Description = description;
         }
-
-        private static readonly string _acronym = "CA";
     }
 }
