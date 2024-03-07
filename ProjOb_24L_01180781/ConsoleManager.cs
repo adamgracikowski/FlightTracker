@@ -16,6 +16,7 @@ namespace ProjOb_24L_01180781
 
         public ConsoleManager(string[] args)
         {
+            // parsing command line arguments
             SourceFile = args.Length > 0 ? args[0] : GetSourceFileFromUser() ?? DefaultSourceFile;
             MinTcpDelay = args.Length > 1 ? int.Parse(args[1]) : DefaultMinTcpDelay;
             MaxTcpDelay = args.Length > 2 ? int.Parse(args[2]) : DefaultMaxTcpDelay;
@@ -62,11 +63,7 @@ namespace ProjOb_24L_01180781
                 { Print.ConsoleText, new Print(new PrintArgs(snapshotTasks, snapshotsDirectory, tcpManager)) }
             };
 
-            Console.WriteLine("Available Commands:");
-            foreach (var key in commandDictionary.Keys)
-            {
-                Console.WriteLine($"> {key}");
-            }
+            DisplayAvailableCommads(commandDictionary);
 
             Console.WriteLine("Estabilishing Tcp connection...");
 
@@ -98,6 +95,14 @@ namespace ProjOb_24L_01180781
         {
             var command = Console.ReadLine() ?? string.Empty;
             return command;
+        }
+        private void DisplayAvailableCommads(Dictionary<string, IConsoleCommand> commandDictionary)
+        {
+            Console.WriteLine("Available Commands:");
+            foreach (var key in commandDictionary.Keys)
+            {
+                Console.WriteLine($"> {key}");
+            }
         }
 
         private static readonly string DefaultSourceFile = "example_data.ftr";

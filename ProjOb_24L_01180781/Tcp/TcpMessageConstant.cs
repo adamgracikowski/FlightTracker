@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ProjOb_24L_01180781.Tcp
 {
+    /// <summary>
+    /// Represents a set of constants specific for TCP messages.
+    /// </summary>
     public static class TcpMessageConstant
     {
         public static readonly int ExtendedAcronymLength = 3;

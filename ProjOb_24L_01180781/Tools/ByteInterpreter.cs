@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace ProjOb_24L_01180781.Tools
 {
+    /// <summary>
+    /// Responsible for converting byte[] to different data types.
+    /// Endianess can be specified.
+    /// </summary>
     public class ByteInterpreter
     {
         public static bool IsLittleEndian { get; set; }

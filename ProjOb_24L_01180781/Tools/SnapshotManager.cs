@@ -16,6 +16,7 @@ namespace ProjOb_24L_01180781.Tools
             int collectionCount;
             var stopwatch = new Stopwatch();
 
+            // prevent data race
             lock (collectionLock)
             {
                 stopwatch.Start();

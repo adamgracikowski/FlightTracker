@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ProjOb_24L_01180781.Ftr
 {
+    /// <summary>
+    /// Represents a set of acronyms specific for .ftr data source.
+    /// </summary>
     public static class FtrAcronym
     {
         public static readonly string Crew = "C";

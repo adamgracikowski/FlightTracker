@@ -14,6 +14,9 @@ using ProjOb_24L_01180781.Factories;
 
 namespace ProjOb_24L_01180781.DataManagers
 {
+    /// <summary>
+    /// Responsible for managing data that comes from TCP connection.
+    /// </summary>
     public class TcpDataManager : DataManager
     {
         public List<IAviationItem> Entities { get; set; }

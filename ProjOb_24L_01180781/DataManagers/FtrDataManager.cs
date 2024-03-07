@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace ProjOb_24L_01180781.DataManagers
 {
+    /// <summary>
+    /// Responsible for managing data that comes from .ftr files.
+    /// </summary>
     public class FtrDataManager : DataManager
     {
         public List<IAviationItem> ParseFtrFile(string filename, char separator)

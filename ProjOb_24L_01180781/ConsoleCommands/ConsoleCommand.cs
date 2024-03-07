@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ProjOb_24L_01180781.ConsoleCommands
 {
+    /// <summary>
+    /// Represents common characteristics of all valid console commands.
+    /// </summary>
     public interface IConsoleCommand
     {
         void Execute();
@@ -46,6 +49,7 @@ namespace ProjOb_24L_01180781.ConsoleCommands
         }
         public void Execute()
         {
+            // taking a snapshot takes place in a separate Task
             Args.Tasks.Add(Task.Factory.StartNew(() => Args.TcpManager.TakeSnapshot(Args.Directory)));
         }
     }
