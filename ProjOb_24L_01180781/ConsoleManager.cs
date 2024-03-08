@@ -83,7 +83,6 @@ namespace ProjOb_24L_01180781
                 else
                 {
                     Console.WriteLine("Invalid command.");
-                    Console.WriteLine("Supported commands:");
                     DisplayAvailableCommads(commandDictionary);
                 }
             } while (string.Compare(userInput, Exit.ConsoleText, StringComparison.InvariantCultureIgnoreCase) != 0);
@@ -100,7 +99,7 @@ namespace ProjOb_24L_01180781
         }
         private void DisplayAvailableCommads(Dictionary<string, IConsoleCommand> commandDictionary)
         {
-            Console.WriteLine("Available Commands:");
+            Console.WriteLine("Supported commands:");
             foreach (var key in commandDictionary.Keys)
             {
                 Console.WriteLine($"> {key}");
