@@ -1,6 +1,7 @@
 ﻿//#define ETAP1
 #define ETAP2
 
+using ProjOb_24L_01180781.Exceptions;
 using System.Globalization;
 
 namespace ProjOb_24L_01180781
@@ -15,10 +16,32 @@ namespace ProjOb_24L_01180781
             consoleManager.SetCulture(new CultureInfo("en-US"));
 
 #if ETAP1
-            consoleManager.RunStage01();
+            try
+            {
+                consoleManager.RunStage01();
+            }
+            catch (FtrFormatException ex)
+            {
+                Console.WriteLine($".ftr exception caught: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"exception caught: {ex.Message}");
+            }
 #endif
 #if ETAP2
-            consoleManager.RunStage02();
+            try
+            {
+                consoleManager.RunStage02();
+            }
+            catch (TcpFormatException ex)
+            {
+                Console.WriteLine($"tcp exception caught: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"exception caught: {ex.Message}");
+            }
 #endif
         }
     }

@@ -56,7 +56,6 @@ namespace ProjOb_24L_01180781
             var snapshotTasks = new List<Task>();
             var networkSource = new Nss.NetworkSourceSimulator(SourceFile, MinTcpDelay, MaxTcpDelay);
             var tcpManager = new TcpDataManager();
-
             var commandDictionary = new Dictionary<string, IConsoleCommand>()
             {
                 { Exit.ConsoleText,  new Exit(new ExitArgs(snapshotTasks)) },
@@ -68,10 +67,11 @@ namespace ProjOb_24L_01180781
             Console.WriteLine("Estabilishing Tcp connection...");
 
             tcpManager.SubscribeToNetworkSource(networkSource);
-            var runTask = tcpManager.RunNetworkSource(networkSource);
+            tcpManager.RunNetworkSource(networkSource);
 
             Console.WriteLine("Connection estabilished successfully.");
             Console.WriteLine($"Estimated speed: [{MinTcpDelay}, {MaxTcpDelay}] ms");
+            
             string userInput;
             do
             {
@@ -83,6 +83,8 @@ namespace ProjOb_24L_01180781
                 else
                 {
                     Console.WriteLine("Invalid command.");
+                    Console.WriteLine("Supported commands:");
+                    DisplayAvailableCommads(commandDictionary);
                 }
             } while (string.Compare(userInput, Exit.ConsoleText, StringComparison.InvariantCultureIgnoreCase) != 0);
         }

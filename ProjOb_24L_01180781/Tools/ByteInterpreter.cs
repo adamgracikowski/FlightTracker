@@ -19,10 +19,8 @@ namespace ProjOb_24L_01180781.Tools
         }
         public UInt64 GetUInt64(byte[] bytes, ref int offset)
         {
-            if (IsLittleEndian != BitConverter.IsLittleEndian)
-            {
-                Array.Reverse(bytes, offset, sizeof(UInt64));
-            }
+            EnsureCorrectEndianess(bytes, offset, sizeof(UInt64));
+
             var result = BitConverter.ToUInt64(bytes, offset);
             offset += sizeof(UInt64);
             return result;
@@ -38,40 +36,32 @@ namespace ProjOb_24L_01180781.Tools
         }
         public Int64 GetInt64(byte[] bytes, ref int offset)
         {
-            if (IsLittleEndian != BitConverter.IsLittleEndian)
-            {
-                Array.Reverse(bytes, offset, sizeof(Int64));
-            }
+            EnsureCorrectEndianess(bytes, offset, sizeof(Int64));
+
             var result = BitConverter.ToInt64(bytes, offset);
             offset += sizeof(Int64);
             return result;
         }
         public UInt32 GetUInt32(byte[] bytes, ref int offset)
         {
-            if (IsLittleEndian != BitConverter.IsLittleEndian)
-            {
-                Array.Reverse(bytes, offset, sizeof(UInt32));
-            }
+            EnsureCorrectEndianess(bytes, offset, sizeof(UInt32));
+
             var result = BitConverter.ToUInt32(bytes, offset);
             offset += sizeof(UInt32);
             return result;
         }
         public UInt16 GetUInt16(byte[] bytes, ref int offset)
         {
-            if (IsLittleEndian != BitConverter.IsLittleEndian)
-            {
-                Array.Reverse(bytes, offset, sizeof(UInt16));
-            }
+            EnsureCorrectEndianess(bytes, offset, sizeof(UInt16));
+
             var result = BitConverter.ToUInt16(bytes, offset);
             offset += sizeof(UInt16);
             return result;
         }
         public Single GetSingle(byte[] bytes, ref int offset)
         {
-            if (IsLittleEndian != BitConverter.IsLittleEndian)
-            {
-                Array.Reverse(bytes, offset, sizeof(Single));
-            }
+            EnsureCorrectEndianess(bytes, offset, sizeof(Single));
+
             var result = BitConverter.ToSingle(bytes, offset);
             offset += sizeof(Single);
             return result;
@@ -81,6 +71,13 @@ namespace ProjOb_24L_01180781.Tools
             var result = Encoding.ASCII.GetString(bytes, offset, count);
             offset += count;
             return result;
+        }
+        private void EnsureCorrectEndianess(byte[] bytes, int offset, int count)
+        {
+            if (IsLittleEndian != BitConverter.IsLittleEndian)
+            {
+                Array.Reverse(bytes, offset, sizeof(Single));
+            }
         }
     }
 }

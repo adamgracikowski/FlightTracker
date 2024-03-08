@@ -10,6 +10,7 @@ using NetworkSourceSimulator;
 
 using Nss = NetworkSourceSimulator;
 using ProjOb_24L_01180781.Factories;
+using ProjOb_24L_01180781.Exceptions;
 
 
 namespace ProjOb_24L_01180781.DataManagers
@@ -75,13 +76,13 @@ namespace ProjOb_24L_01180781.DataManagers
             }
             else
             {
-                throw new FormatException(); // dodać własny wyjątek
+                throw new TcpFormatException($"unknown acronym (${acronym})");
             }
         }
         private static string ExtractAcronym(Message message)
         {
             int offset = 0;
-            var bi = new ByteInterpreter(isLittleEndian: true);
+            var bi = new ByteInterpreter();
             return bi.GetString(message.MessageBytes, ref offset, TcpAcronym.Length);
         }
 

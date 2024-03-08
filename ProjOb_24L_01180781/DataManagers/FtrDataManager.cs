@@ -65,7 +65,7 @@ namespace ProjOb_24L_01180781.DataManagers
             else
             {
                 // not finding the acronym in the dictionary means that the file was ill-formated
-                throw new FtrFormatException($"unknown acronym (${acronym})", context); // tutaj jakiś inny wyjątek
+                throw new FtrFormatException($"unknown acronym (${acronym})", context);
             }
         }
         private static string ExtractAcronym(string line, char separator)
