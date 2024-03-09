@@ -82,7 +82,7 @@ namespace ProjOb_24L_01180781.DataManagers
             { FtrAcronym.Passenger,      new PassengerFtrFactory() },
             { FtrAcronym.Cargo,          new CargoFtrFactory() },
             { FtrAcronym.CargoPlane,     new CargoPlaneFtrFactory() },
-            { FtrAcronym.PassengerPlane, new CargoPlaneFtrFactory() },
+            { FtrAcronym.PassengerPlane, new PassengerPlaneFtrFactory() },
             { FtrAcronym.Airport,        new AirportFtrFactory() },
             { FtrAcronym.Flight,         new FlightFtrFactory() }
         };

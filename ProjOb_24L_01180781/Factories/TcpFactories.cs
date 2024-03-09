@@ -33,11 +33,23 @@ namespace ProjOb_24L_01180781.Factories
             var emailLength = bi.GetUInt16(bytes, ref offset);
             var email = bi.GetString(bytes, ref offset, emailLength);
             var practice = bi.GetUInt16(bytes, ref offset);
-            var role = bi.GetString(bytes, ref offset, 1);
+            var roleLetter = bi.GetString(bytes, ref offset, 1);
+            
+            if(!LetterToRole.TryGetValue(roleLetter, out var role))
+            {
+                var message = "unknown role for a Crew entity";
+                throw new TcpFormatException(message);
+            }
 
             return new Crew(id, name, age, phone, email, practice, role);
 
         }
+        private static readonly Dictionary<string, string> LetterToRole = new()
+        {
+            { "A", "Attendant" },
+            { "C", "Captain" },
+            { "O", "Other" }
+        };
     }
     public class PassengerTcpFactory : ITcpAviationFactory
     {
@@ -62,11 +74,24 @@ namespace ProjOb_24L_01180781.Factories
                 TcpMessageConstant.PersonPhoneNumberLength);
             var emailLength = bi.GetUInt16(bytes, ref offset);
             var email = bi.GetString(bytes, ref offset, emailLength);
-            var planeClass = bi.GetString(bytes, ref offset, 1);
+            var planeClassLetter = bi.GetString(bytes, ref offset, 1);
+            
+            if (!LetterToPlaneClass.TryGetValue(planeClassLetter, out var planeClass))
+            {
+                var message = "unknown plane class for a Passenger entity";
+                throw new TcpFormatException(message);
+            }
+
             var miles = bi.GetUInt64(bytes, ref offset);
 
             return new Passenger(id, name, age, phone, email, planeClass, miles);
         }
+        private static readonly Dictionary<string, string> LetterToPlaneClass = new()
+        {
+            { "F", "First" },
+            { "B", "Business" },
+            { "E", "Economy" }
+        };
     }
     public class CargoTcpFactory : ITcpAviationFactory
     {
@@ -110,6 +135,7 @@ namespace ProjOb_24L_01180781.Factories
             var id = bi.GetUInt64(bytes, ref offset);
             var serial = bi.GetString(bytes, ref offset,
                 TcpMessageConstant.PlaneSerialLength);
+            offset += TcpMessageConstant.PlaneMessageHole;
             var country = bi.GetString(bytes, ref offset,
                 TcpMessageConstant.IsoCountryCodeLength);
             var modelLength = bi.GetUInt16(bytes, ref offset);
@@ -137,6 +163,7 @@ namespace ProjOb_24L_01180781.Factories
             var id = bi.GetUInt64(bytes, ref offset);
             var serial = bi.GetString(bytes, ref offset,
                 TcpMessageConstant.PlaneSerialLength);
+            offset += TcpMessageConstant.PlaneMessageHole;
             var country = bi.GetString(bytes, ref offset,
                 TcpMessageConstant.IsoCountryCodeLength);
             var modelLength = bi.GetUInt16(bytes, ref offset);

@@ -67,11 +67,11 @@ namespace ProjOb_24L_01180781
             Console.WriteLine("Estabilishing Tcp connection...");
 
             tcpManager.SubscribeToNetworkSource(networkSource);
-            tcpManager.RunNetworkSource(networkSource);
+            var runTask = tcpManager.RunNetworkSource(networkSource);
 
             Console.WriteLine("Connection estabilished successfully.");
             Console.WriteLine($"Estimated speed: [{MinTcpDelay}, {MaxTcpDelay}] ms");
-            
+
             string userInput;
             do
             {

@@ -95,7 +95,7 @@ namespace ProjOb_24L_01180781.DataManagers
             { TcpAcronym.Passenger,      new PassengerTcpFactory() },
             { TcpAcronym.Cargo,          new CargoTcpFactory() },
             { TcpAcronym.CargoPlane,     new CargoPlaneTcpFactory() },
-            { TcpAcronym.PassengerPlane, new CargoPlaneTcpFactory() },
+            { TcpAcronym.PassengerPlane, new PassengerPlaneTcpFactory() },
             { TcpAcronym.Airport,        new AirportTcpFactory() },
             { TcpAcronym.Flight,         new FlightTcpFactory() }
         };
