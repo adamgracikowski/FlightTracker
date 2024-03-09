@@ -64,7 +64,7 @@ namespace ProjOb_24L_01180781
 
             DisplayAvailableCommads(commandDictionary);
 
-            Console.WriteLine("Estabilishing Tcp connection...");
+            Console.WriteLine("Estabilishing TCP connection...");
 
             tcpManager.SubscribeToNetworkSource(networkSource);
             var runTask = tcpManager.RunNetworkSource(networkSource);
@@ -86,6 +86,22 @@ namespace ProjOb_24L_01180781
                     DisplayAvailableCommads(commandDictionary);
                 }
             } while (string.Compare(userInput, Exit.ConsoleText, StringComparison.InvariantCultureIgnoreCase) != 0);
+
+            Console.WriteLine("Checking TCP connection for possible failures...");
+            var ex = runTask.Exception;
+            if(ex != null)
+            {
+                foreach (var innerException in ex.InnerExceptions)
+                {
+                    Console.WriteLine(innerException.Message);
+                }
+            }
+            else
+            {
+                Console.WriteLine("No failures detected.");
+            }
+            Console.WriteLine("Exiting!");
+            Environment.Exit(0);
         }
         private string? GetSourceFileFromUser()
         {

@@ -35,8 +35,6 @@ namespace ProjOb_24L_01180781.ConsoleCommands
                     Console.WriteLine(innerException.Message);
                 }
             }
-            Console.WriteLine("Exiting!");
-            Environment.Exit(0);
         }
     }
     public class Print : IConsoleCommand
