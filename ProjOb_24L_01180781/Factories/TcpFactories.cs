@@ -34,8 +34,8 @@ namespace ProjOb_24L_01180781.Factories
             var email = bi.GetString(bytes, ref offset, emailLength);
             var practice = bi.GetUInt16(bytes, ref offset);
             var roleLetter = bi.GetString(bytes, ref offset, 1);
-            
-            if(!LetterToRole.TryGetValue(roleLetter, out var role))
+
+            if (!LetterToRole.TryGetValue(roleLetter, out var role))
             {
                 var message = "unknown role for a Crew entity";
                 throw new TcpFormatException(message);
@@ -75,7 +75,7 @@ namespace ProjOb_24L_01180781.Factories
             var emailLength = bi.GetUInt16(bytes, ref offset);
             var email = bi.GetString(bytes, ref offset, emailLength);
             var planeClassLetter = bi.GetString(bytes, ref offset, 1);
-            
+
             if (!LetterToPlaneClass.TryGetValue(planeClassLetter, out var planeClass))
             {
                 var message = "unknown plane class for a Passenger entity";
@@ -223,8 +223,12 @@ namespace ProjOb_24L_01180781.Factories
             var id = bi.GetUInt64(bytes, ref offset);
             var originId = bi.GetUInt64(bytes, ref offset);
             var targetId = bi.GetUInt64(bytes, ref offset);
-            var takeOffTime = MsConverter.SinceEpochUtc(bi.GetInt64(bytes, ref offset));
-            var landingTime = MsConverter.SinceEpochUtc(bi.GetInt64(bytes, ref offset));
+            var takeOffMiliseconds = bi.GetInt64(bytes, ref offset);
+            var landingMiliseconds = bi.GetInt64(bytes, ref offset);
+            var takeOffTime = TimeConverter.SinceEpochUtcToString(takeOffMiliseconds);
+            var landingTime = TimeConverter.SinceEpochUtcToString(landingMiliseconds);
+            var takeOffDateTime = TimeConverter.SinceEpochUtcToDateTime(takeOffMiliseconds);
+            var landingDateTime = TimeConverter.SinceEpochUtcToDateTime(landingMiliseconds);
             var planeId = bi.GetUInt64(bytes, ref offset);
             var crewIdsCount = bi.GetUInt16(bytes, ref offset);
             var crewIds = bi.GetUInt64(bytes, ref offset, crewIdsCount);
@@ -235,7 +239,7 @@ namespace ProjOb_24L_01180781.Factories
                                         amsl: Location.Unknown);
 
             return new Flight(id, originId, targetId, takeOffTime, landingTime,
-                              location, planeId, crewIds, loadIds);
+                              location, planeId, crewIds, loadIds, takeOffDateTime, landingDateTime);
         }
     }
 }

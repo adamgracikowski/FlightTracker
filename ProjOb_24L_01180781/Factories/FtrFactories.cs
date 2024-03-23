@@ -111,7 +111,6 @@ namespace ProjOb_24L_01180781.Factories
         public IAviationItem Create(string[] itemDetails)
         {
             var separator = new char[] { '[', ';', ']' };
-
             return new Flight(
                 id: UInt64.Parse(itemDetails[1]),
                 originId: UInt64.Parse(itemDetails[2]),
