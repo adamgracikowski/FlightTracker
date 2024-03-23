@@ -1,6 +1,7 @@
 ﻿using ProjOb_24L_01180781.ConsoleCommands;
 using ProjOb_24L_01180781.DataManagers;
 using ProjOb_24L_01180781.Exceptions;
+using ProjOb_24L_01180781.GUI;
 using ProjOb_24L_01180781.Tools;
 using System.Globalization;
 
@@ -50,17 +51,23 @@ namespace ProjOb_24L_01180781
                 Console.WriteLine(bytes);
             }
         }
-        public void RunStage02()
+        public void RunStage02and03()
         {
             var snapshotsDirectory = SnapshotManager.TryCreateSnapshotsDirectory();
             var snapshotTasks = new List<Task>();
             var networkSource = new Nss.NetworkSourceSimulator(SourceFile, MinTcpDelay, MaxTcpDelay);
+
             var tcpManager = new TcpDataManager();
+            var guiManager = GuiManager.GetInstance();
+
             var commandDictionary = new Dictionary<string, IConsoleCommand>()
             {
-                { Exit.ConsoleText,  new Exit(new ExitArgs(snapshotTasks)) },
-                { Print.ConsoleText, new Print(new PrintArgs(snapshotTasks, snapshotsDirectory, tcpManager)) }
+                { Exit.ConsoleText,  new Exit(new ExitArgs(snapshotTasks, guiManager)) },
+                { Print.ConsoleText, new Print(new PrintArgs(snapshotTasks, snapshotsDirectory, tcpManager)) },
+                { Open.ConsoleText,  new Open(new OpenArgs(guiManager)) }
             };
+
+            var exit = commandDictionary[Exit.ConsoleText];
 
             DisplayAvailableCommads(commandDictionary);
 
@@ -85,11 +92,11 @@ namespace ProjOb_24L_01180781
                     Console.WriteLine("Invalid command.");
                     DisplayAvailableCommads(commandDictionary);
                 }
-            } while (string.Compare(userInput, Exit.ConsoleText, StringComparison.InvariantCultureIgnoreCase) != 0);
+            } while (exit.Executed == false);
 
             Console.WriteLine("Checking TCP connection for possible failures...");
             var ex = runTask.Exception;
-            if(ex != null)
+            if (ex != null)
             {
                 foreach (var innerException in ex.InnerExceptions)
                 {
@@ -103,17 +110,17 @@ namespace ProjOb_24L_01180781
             Console.WriteLine("Exiting!");
             Environment.Exit(0);
         }
-        private string? GetSourceFileFromUser()
+        private static string? GetSourceFileFromUser()
         {
             Console.WriteLine("Please provide the path to the source file: ");
             return Console.ReadLine();
         }
-        private string GetCommandFromUser()
+        private static string GetCommandFromUser()
         {
             var command = Console.ReadLine() ?? string.Empty;
             return command;
         }
-        private void DisplayAvailableCommads(Dictionary<string, IConsoleCommand> commandDictionary)
+        private static void DisplayAvailableCommads(Dictionary<string, IConsoleCommand> commandDictionary)
         {
             Console.WriteLine("Supported commands:");
             foreach (var key in commandDictionary.Keys)
@@ -123,7 +130,7 @@ namespace ProjOb_24L_01180781
         }
 
         private static readonly string DefaultSourceFile = "example_data.ftr";
-        public static readonly int DefaultMinTcpDelay = 100;
-        public static readonly int DefaultMaxTcpDelay = 200;
+        private static readonly int DefaultMinTcpDelay = 100;
+        private static readonly int DefaultMaxTcpDelay = 200;
     }
 }
