@@ -1,4 +1,5 @@
 ﻿using ProjOb_24L_01180781.DataManagers;
+using ProjOb_24L_01180781.GUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,11 @@ namespace ProjOb_24L_01180781.ConsoleCommands
     public class ExitArgs : ConsoleCommandArg
     {
         public List<Task> Tasks { get; set; }
-        public ExitArgs(List<Task> taks)
+        public GuiManager GuiManager { get; set; }
+        public ExitArgs(List<Task> taks, GuiManager guiManager)
         {
             Tasks = taks;
+            GuiManager = guiManager;
         }
     }
     public class PrintArgs : ConsoleCommandArg
@@ -26,6 +29,14 @@ namespace ProjOb_24L_01180781.ConsoleCommands
             Tasks = tasks;
             Directory = directory;
             TcpManager = tcpManager;
+        }
+    }
+    public class OpenArgs : ConsoleCommandArg
+    {
+        public GuiManager GuiManager { get; set; }
+        public OpenArgs(GuiManager guiManager)
+        {
+            GuiManager = guiManager;
         }
     }
 }
