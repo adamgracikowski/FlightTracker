@@ -1,8 +1,7 @@
 {
   "profiles": {
     "ProjOb_24L_01180781": {
-      "commandName": "Project",
-      "commandLineArgs": "example_data.ftr\r\n1\r\n2"
+      "commandName": "Project"
     }
   }
 }
