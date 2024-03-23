@@ -11,6 +11,7 @@ using NetworkSourceSimulator;
 using Nss = NetworkSourceSimulator;
 using ProjOb_24L_01180781.Factories;
 using ProjOb_24L_01180781.Exceptions;
+using ProjOb_24L_01180781.GUI;
 
 
 namespace ProjOb_24L_01180781.DataManagers
@@ -20,19 +21,13 @@ namespace ProjOb_24L_01180781.DataManagers
     /// </summary>
     public class TcpDataManager : DataManager
     {
-        public List<IAviationItem> Entities { get; set; }
-        public TcpDataManager()
-        {
-            Entities = new();
-            _entitiesLock = new();
-        }
         public Task RunNetworkSource(Nss.NetworkSourceSimulator networkSource)
         {
             return Task.Factory.StartNew(networkSource.Run);
         }
         public void SubscribeToNetworkSource(Nss.NetworkSourceSimulator networkSource)
         {
-            var lastAcronym = TcpAcronym.Airport;
+            var lastAcronym = TcpAcronyms.Airport;
             var lastFactory = AcronymToFactory(lastAcronym);
             var factory = lastFactory;
 
@@ -54,16 +49,17 @@ namespace ProjOb_24L_01180781.DataManagers
                         lastAcronym = acronym;
                     }
                     var entity = factory.Create(message.MessageBytes);
-                    lock (_entitiesLock)
-                    {
-                        Entities.Add(entity);
-                    }
+                    AviationDatabase.Add(entity);
                 }
             };
         }
         public void TakeSnapshot(string? directoryPath = null)
         {
-            var snapshotDetails = SnapshotManager.TakeSnapshot(Entities, _entitiesLock, directoryPath);
+            SnapshotDetails snapshotDetails;
+            lock (AviationDatabase.AviationItemsLock)
+            {
+                snapshotDetails = SnapshotManager.TakeSnapshot(AviationDatabase.AviationItems, directoryPath);
+            }
             Console.WriteLine($"Created: {snapshotDetails.Name}");
             Console.WriteLine($"Serialized: {snapshotDetails.CollectionCount} entities");
             Console.WriteLine($"Time taken: {snapshotDetails.TimeTaken.TotalMilliseconds} ms");
@@ -83,22 +79,21 @@ namespace ProjOb_24L_01180781.DataManagers
         {
             int offset = 0;
             var bi = new ByteInterpreter();
-            return bi.GetString(message.MessageBytes, ref offset, TcpAcronym.Length);
+            return bi.GetString(message.MessageBytes, ref offset, TcpAcronyms.Length);
         }
 
         /// <summary>
-        /// Maps FtrAcronym to appropriate factory objects.
+        /// Maps FtrAcronyms to appropriate factory objects.
         /// </summary>
         private static readonly Dictionary<string, ITcpAviationFactory> AcronymToFactoryDictionary = new()
         {
-            { TcpAcronym.Crew,           new CrewTcpFactory() },
-            { TcpAcronym.Passenger,      new PassengerTcpFactory() },
-            { TcpAcronym.Cargo,          new CargoTcpFactory() },
-            { TcpAcronym.CargoPlane,     new CargoPlaneTcpFactory() },
-            { TcpAcronym.PassengerPlane, new PassengerPlaneTcpFactory() },
-            { TcpAcronym.Airport,        new AirportTcpFactory() },
-            { TcpAcronym.Flight,         new FlightTcpFactory() }
+            { TcpAcronyms.Crew,           new CrewTcpFactory() },
+            { TcpAcronyms.Passenger,      new PassengerTcpFactory() },
+            { TcpAcronyms.Cargo,          new CargoTcpFactory() },
+            { TcpAcronyms.CargoPlane,     new CargoPlaneTcpFactory() },
+            { TcpAcronyms.PassengerPlane, new PassengerPlaneTcpFactory() },
+            { TcpAcronyms.Airport,        new AirportTcpFactory() },
+            { TcpAcronyms.Flight,         new FlightTcpFactory() }
         };
-        private object _entitiesLock;
     }
 }

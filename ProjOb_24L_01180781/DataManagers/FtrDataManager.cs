@@ -21,7 +21,7 @@ namespace ProjOb_24L_01180781.DataManagers
             ulong lineNumber = 0;
             var entities = new List<IAviationItem>();
 
-            var lastAcronym = FtrAcronym.Airport;
+            var lastAcronym = FtrAcronyms.Airport;
             var lastFactory = AcronymToFactory(lastAcronym);
             var factory = lastFactory;
 
@@ -74,17 +74,17 @@ namespace ProjOb_24L_01180781.DataManagers
         }
 
         /// <summary>
-        /// Maps FtrAcronym to appropriate factory objects.
+        /// Maps FtrAcronyms to appropriate factory objects.
         /// </summary>
         private static readonly Dictionary<string, IFtrAviationFactory> AcronymToFactoryDictionary = new()
         {
-            { FtrAcronym.Crew,           new CrewFtrFactory() },
-            { FtrAcronym.Passenger,      new PassengerFtrFactory() },
-            { FtrAcronym.Cargo,          new CargoFtrFactory() },
-            { FtrAcronym.CargoPlane,     new CargoPlaneFtrFactory() },
-            { FtrAcronym.PassengerPlane, new PassengerPlaneFtrFactory() },
-            { FtrAcronym.Airport,        new AirportFtrFactory() },
-            { FtrAcronym.Flight,         new FlightFtrFactory() }
+            { FtrAcronyms.Crew,           new CrewFtrFactory() },
+            { FtrAcronyms.Passenger,      new PassengerFtrFactory() },
+            { FtrAcronyms.Cargo,          new CargoFtrFactory() },
+            { FtrAcronyms.CargoPlane,     new CargoPlaneFtrFactory() },
+            { FtrAcronyms.PassengerPlane, new PassengerPlaneFtrFactory() },
+            { FtrAcronyms.Airport,        new AirportFtrFactory() },
+            { FtrAcronyms.Flight,         new FlightFtrFactory() }
         };
     }
 }
