@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProjOb_24L_01180781.AviationItems
 {
-    public struct Location
+    public class Location
     {
         public static readonly Single Unknown = 0;
         public Single Longitude { get; set; }
