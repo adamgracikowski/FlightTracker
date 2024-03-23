@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ProjOb_24L_01180781.Ftr;
+using ProjOb_24L_01180781.Tcp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +11,9 @@ namespace ProjOb_24L_01180781.AviationItems
     public class Passenger
         : Person, IAviationItem
     {
+        public string FtrAcronym { get; } = FtrAcronyms.Passenger;
+        public string TcpAcronym { get; } = TcpAcronyms.Passenger;
+
         public string Class { get; private set; }
         public UInt64 Miles { get; private set; }
 

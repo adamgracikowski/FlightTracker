@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProjOb_24L_01180781.AviationItems
+namespace ProjOb_24L_01180781.Ftr
 {
-    public interface IAviationItem
-        : IFtrItem, ITcpItem
-    { }
+    public interface IFtrItem
+    {
+        public string FtrAcronym { get; }
+    }
 }

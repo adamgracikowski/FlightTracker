@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ProjOb_24L_01180781.Ftr;
+using ProjOb_24L_01180781.Tcp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +11,9 @@ namespace ProjOb_24L_01180781.AviationItems
     public class Cargo
         : IAviationItem
     {
+        public string FtrAcronym { get; } = FtrAcronyms.Cargo;
+        public string TcpAcronym { get; } = TcpAcronyms.Cargo;
+
         public UInt64 Id { get; private set; }
         public Single Weight { get; private set; }
         public string Code { get; private set; }

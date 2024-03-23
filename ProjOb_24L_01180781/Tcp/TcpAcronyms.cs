@@ -9,7 +9,7 @@ namespace ProjOb_24L_01180781.Tcp
     /// <summary>
     /// Represents a set of acronyms specific for TCP connection data source.
     /// </summary>
-    public static class TcpAcronym
+    public static class TcpAcronyms
     {
         public static readonly string Crew = "NCR";
         public static readonly string Passenger = "NPA";
