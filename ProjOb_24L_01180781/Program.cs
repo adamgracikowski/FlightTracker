@@ -1,5 +1,5 @@
 ﻿//#define ETAP1
-#define ETAP2
+#define ETAP2AND3
 
 using ProjOb_24L_01180781.Exceptions;
 using System.Globalization;
@@ -29,10 +29,10 @@ namespace ProjOb_24L_01180781
                 Console.WriteLine($"exception caught: {ex.Message}");
             }
 #endif
-#if ETAP2
+#if ETAP2AND3
             try
             {
-                consoleManager.RunStage02();
+                consoleManager.RunStage02and03();
             }
             catch (TcpFormatException ex)
             {
