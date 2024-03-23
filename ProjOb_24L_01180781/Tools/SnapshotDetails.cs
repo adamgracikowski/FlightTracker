@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProjOb_24L_01180781.Tools
 {
-    public struct SnapshotDetails
+    public class SnapshotDetails
     {
         public string Name { get; private set; }
         public int CollectionCount { get; private set; }

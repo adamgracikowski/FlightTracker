@@ -10,21 +10,16 @@ namespace ProjOb_24L_01180781.Tools
 {
     public static class SnapshotManager
     {
-        public static SnapshotDetails TakeSnapshot<T>(IEnumerable<T> collection, object collectionLock, string? directoryPath = null)
+        public static SnapshotDetails TakeSnapshot<T>(IEnumerable<T> collection, string? directoryPath = null)
         {
             string name, fullname;
             int collectionCount;
             var stopwatch = new Stopwatch();
 
-            // prevent data race
-            lock (collectionLock)
-            {
-                stopwatch.Start();
-                name = GetSnapshotFileName();
-                fullname = (directoryPath != null) ? Path.Combine(directoryPath, name) : name;
-                collectionCount = SerializeToJson(collection, fullname);
-            }
-
+            stopwatch.Start();
+            name = GetSnapshotFileName();
+            fullname = (directoryPath != null) ? Path.Combine(directoryPath, name) : name;
+            collectionCount = SerializeToJson(collection, fullname);
             stopwatch.Stop();
 
             return new SnapshotDetails(name, collectionCount, stopwatch.Elapsed);
