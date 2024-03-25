@@ -90,21 +90,17 @@ namespace ProjOb_24L_01180781.GUI
         {
             AviationDatabase.SyncAviationItems();
 
-            List<FlightGUI> flightGUIs;
-            lock (AviationDatabase.FlightDetailsLock)
+            List<FlightDetails> active;
+            lock (AviationDatabase.AviationItemsLock)
             {
-                AviationDatabase.FlightDetails.ForEach(details => details.UpdateFlightLocation());
-                flightGUIs = AviationDatabase.FlightDetails
-                    .Where(flightDetail =>
-                    {
-                        var now = DateTime.UtcNow;
-                        return flightDetail.Flight.TakeOffDateTime <= now &&
-                               now <= flightDetail.Flight.LandingDateTime;
-                    })
-                    .Select(GuiAdapter.FlightDetailsToFlightGui)
-                    .ToList();
+                var now = DateTime.UtcNow;
+                active = AviationDatabase.FlightDetails.Where(flightDetail =>
+                        flightDetail.Flight.TakeOffDateTime <= now &&
+                        now <= flightDetail.Flight.LandingDateTime
+                    ).ToList();
+                active.ForEach(FlightDetail => FlightDetail.UpdateFlightLocation());
             }
-            Runner.UpdateGUI(new FlightsGUIData(flightGUIs));
+            Runner.UpdateGUI(new FlightsGuiDataAdapter(active));
         }
 
         private RunnerState _runnerState = RunnerState.NotUsed;
