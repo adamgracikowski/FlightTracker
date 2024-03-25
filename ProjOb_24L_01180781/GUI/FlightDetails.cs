@@ -8,18 +8,28 @@ using System.Threading.Tasks;
 
 namespace ProjOb_24L_01180781.GUI
 {
-    public class FlightDetails
+    public class FlightDetails : FlightGUI
     {
         public Flight Flight { get; private set; }
         public Airport Origin { get; private set; }
         public Airport Target { get; private set; }
-        public double Rotation { get; private set; }
+        public new WorldPosition WorldPosition
+        {
+            get
+            {
+                _worldPosition.Longitude = Flight.Location.Longitude;
+                _worldPosition.Latitude = Flight.Location.Latitude;
+                return _worldPosition;
+            }
+        }
         public FlightDetails(Flight flight, Airport origin, Airport target)
+            : base()
         {
             Flight = flight;
             Origin = origin;
             Target = target;
-            Rotation = MapCalculator.CalculateRotation(Origin.Location, Target.Location);
+            ID = flight.Id;
+            MapCoordRotation = MapCalculator.CalculateRotation(Origin.Location, Target.Location);
         }
         public void UpdateFlightLocation()
         {
@@ -34,5 +44,7 @@ namespace ProjOb_24L_01180781.GUI
             Flight.Location.Longitude = (Single)longitude;
             Flight.Location.Latitude = (Single)latitude;
         }
+
+        private WorldPosition _worldPosition;
     }
 }
