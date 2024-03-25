@@ -14,7 +14,6 @@ namespace ProjOb_24L_01180781.GUI
         public static List<IAviationItem> AviationItems { get; private set; } = [];
         public static readonly object AviationItemsLock = new();
         public static List<FlightDetails> FlightDetails { get; private set; } = [];
-        public static readonly object FlightDetailsLock = new();
 
         public static void Add(IAviationItem item)
         {
@@ -43,33 +42,28 @@ namespace ProjOb_24L_01180781.GUI
 
         private static void SyncAirports(IEnumerable<IAviationItem> rangeToSync)
         {
-            lock (_airportsDictionaryLock)
-            {
-                var airports = rangeToSync
-                    .Where(item => item.TcpAcronym == TcpAcronyms.Airport)
-                    .Cast<Airport>();
+            var airports = rangeToSync
+                .Where(item => item.TcpAcronym == TcpAcronyms.Airport)
+                .Cast<Airport>();
 
-                foreach (var airport in airports)
+            foreach (var airport in airports)
+            {
+                if (!_airportsDictionary.TryAdd(airport.Id, airport))
                 {
-                    if (!_airportsDictionary.TryAdd(airport.Id, airport))
-                    {
-                        var message = $"duplicated airport ID ({airport.Id})";
-                        throw new TcpFormatException(message);
-                    }
+                    var message = $"duplicated airport ID ({airport.Id})";
+                    throw new TcpFormatException(message);
                 }
             }
         }
         private static void SyncFlights(IEnumerable<IAviationItem> rangeToSync)
         {
-            lock (FlightDetailsLock)
-            {
-                var flights = rangeToSync
-                    .Where(item => item.TcpAcronym == TcpAcronyms.Flight)
-                    .Cast<Flight>();
-                FlightDetails.AddRange(flights.Select(flight =>
-                    new FlightDetails(flight, FindAirport(flight.OriginId), FindAirport(flight.TargetId))
-                ));
-            }
+            var flights = rangeToSync
+                .Where(item => item.TcpAcronym == TcpAcronyms.Flight)
+                .Cast<Flight>();
+
+            FlightDetails.AddRange(flights.Select(flight =>
+                new FlightDetails(flight, FindAirport(flight.OriginId), FindAirport(flight.TargetId))
+            ));
         }
         private static Airport FindAirport(UInt64 id)
         {
@@ -84,8 +78,7 @@ namespace ProjOb_24L_01180781.GUI
             }
         }
 
-        private static Dictionary<UInt64, Airport> _airportsDictionary = new();
-        private static object _airportsDictionaryLock = new();
+        private static Dictionary<UInt64, Airport> _airportsDictionary = [];
         private static int _startUpdateFrom = 0;
     }
 }
