@@ -8,6 +8,8 @@ namespace ProjOb_24L_01180781.Tools
 {
     public static class TimeConverter
     {
+        public static readonly string Format = "HH:mm";
+
         /// <summary>
         /// Converts a number of miliseconds since EPOCH to formatted string.
         /// </summary>
@@ -15,7 +17,7 @@ namespace ProjOb_24L_01180781.Tools
         /// <returns>String in the following format: HH:mm</returns>
         public static string SinceEpochUtcToString(Int64 ms)
         {
-            return DateTimeOffset.FromUnixTimeMilliseconds(ms).UtcDateTime.ToString("HH:mm");
+            return DateTimeOffset.FromUnixTimeMilliseconds(ms).UtcDateTime.ToString(Format);
         }
         public static DateTime SinceEpochUtcToDateTime(Int64 ms)
         {
@@ -23,7 +25,11 @@ namespace ProjOb_24L_01180781.Tools
         }
         public static DateTime ParseExact(string time)
         {
-            return DateTime.ParseExact(time, "HH:mm", null);
+            return DateTime.ParseExact(time, Format, null);
+        }
+        public static string FromDateTimeToFormatString(DateTime dateTime)
+        {
+            return dateTime.ToString(Format);
         }
     }
 }

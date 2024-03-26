@@ -33,13 +33,8 @@ namespace ProjOb_24L_01180781.GUI
         }
         public void UpdateFlightLocation()
         {
-            var departure = Flight.TakeOffDateTime ??
-                TimeConverter.ParseExact(Flight.TakeOffTime);
-            var arrival = Flight.LandingDateTime ??
-                TimeConverter.ParseExact(Flight.LandingTime);
-
             var (longitude, latitude) = MapCalculator.CalculateLocation(
-                departure, arrival, Origin.Location, Target.Location);
+                Flight.TakeOffDateTime, Flight.LandingDateTime, Origin.Location, Target.Location);
 
             Flight.Location.Longitude = (Single)longitude;
             Flight.Location.Latitude = (Single)latitude;

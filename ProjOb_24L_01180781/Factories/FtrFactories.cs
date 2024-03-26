@@ -111,19 +111,31 @@ namespace ProjOb_24L_01180781.Factories
         public IAviationItem Create(string[] itemDetails)
         {
             var separator = new char[] { '[', ';', ']' };
+            var takeOffTime = itemDetails[4];
+            var takeOffDateTime = TimeConverter.ParseExact(takeOffTime);
+            var landingTime = itemDetails[5];
+            var landingDateTime = TimeConverter.ParseExact(landingTime);
+            if (takeOffDateTime > landingDateTime)
+            {
+                landingDateTime = landingDateTime.AddDays(1);
+                landingTime = TimeConverter.FromDateTimeToFormatString(landingDateTime);
+            }
+
             return new Flight(
                 id: UInt64.Parse(itemDetails[1]),
                 originId: UInt64.Parse(itemDetails[2]),
                 targetId: UInt64.Parse(itemDetails[3]),
-                takeOffTime: itemDetails[4],
-                landingTime: itemDetails[5],
+                takeOffTime: takeOffTime,
+                landingTime: landingTime,
                 location: new Location(
                     longitude: Single.Parse(itemDetails[6]),
                     latitude: Single.Parse(itemDetails[7]),
                     amsl: Single.Parse(itemDetails[8])),
                 planeId: UInt64.Parse(itemDetails[9]),
                 crewIds: itemDetails[10].ParseToArraySeparated<UInt64>(separator),
-                loadIds: itemDetails[11].ParseToArraySeparated<UInt64>(separator)
+                loadIds: itemDetails[11].ParseToArraySeparated<UInt64>(separator),
+                takeOffDateTime: takeOffDateTime,
+                landingDateTime: landingDateTime
             );
         }
     }

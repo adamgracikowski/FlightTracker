@@ -229,6 +229,11 @@ namespace ProjOb_24L_01180781.Factories
             var landingTime = TimeConverter.SinceEpochUtcToString(landingMiliseconds);
             var takeOffDateTime = TimeConverter.SinceEpochUtcToDateTime(takeOffMiliseconds);
             var landingDateTime = TimeConverter.SinceEpochUtcToDateTime(landingMiliseconds);
+            if (takeOffDateTime > landingDateTime)
+            {
+                landingDateTime = landingDateTime.AddDays(1);
+                landingTime = TimeConverter.FromDateTimeToFormatString(landingDateTime);
+            }
             var planeId = bi.GetUInt64(bytes, ref offset);
             var crewIdsCount = bi.GetUInt16(bytes, ref offset);
             var crewIds = bi.GetUInt64(bytes, ref offset, crewIdsCount);
