@@ -1,6 +1,6 @@
 ﻿using ProjOb_24L_01180781.GUI;
 
-namespace ProjOb_24L_01180781.ConsoleCommands
+namespace ProjOb_24L_01180781.ConsoleManagement.Commands
 {
     public class ExitArgs
     : ConsoleCommandArg
