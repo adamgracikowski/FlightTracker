@@ -18,5 +18,9 @@ namespace ProjOb_24L_01180781.AviationItems
             Latitude = latitude;
             Amsl = amsl;
         }
+        public Location Copy()
+        {
+            return new Location(Longitude, Latitude, Amsl);
+        }
     }
 }

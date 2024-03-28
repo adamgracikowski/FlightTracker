@@ -1,4 +1,5 @@
 ﻿using ProjOb_24L_01180781.Ftr;
+using ProjOb_24L_01180781.Media;
 using ProjOb_24L_01180781.Tcp;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 namespace ProjOb_24L_01180781.AviationItems
 {
     public class PassengerPlane
-        : Plane, IAviationItem
+        : Plane, IAviationItem, IReportable
     {
         public string FtrAcronym { get; } = FtrAcronyms.PassengerPlane;
         public string TcpAcronym { get; } = TcpAcronyms.PassengerPlane;
@@ -19,6 +20,14 @@ namespace ProjOb_24L_01180781.AviationItems
             : base(id, serial, country, model)
         {
             ClassSize = classSize;
+        }
+        public string AcceptMediaReport(IMedia media)
+        {
+            return media.MakeReport(this);
+        }
+        public IAviationItem Copy()
+        {
+            return new PassengerPlane(Id, Serial, Country, Model, ClassSize);
         }
     }
 }

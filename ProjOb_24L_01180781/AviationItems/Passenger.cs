@@ -23,5 +23,9 @@ namespace ProjOb_24L_01180781.AviationItems
             Class = planeClass;
             Miles = miles;
         }
+        public IAviationItem Copy()
+        {
+            return new Passenger(Id, Name, Age, Phone, Email, Class, Miles);
+        }
     }
 }

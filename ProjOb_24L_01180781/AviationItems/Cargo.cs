@@ -26,5 +26,9 @@ namespace ProjOb_24L_01180781.AviationItems
             Code = code;
             Description = description;
         }
+        public IAviationItem Copy()
+        {
+            return new Cargo(Id, Weight, Code, Description);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using ProjOb_24L_01180781.Ftr;
+using ProjOb_24L_01180781.Media;
 using ProjOb_24L_01180781.Tcp;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 namespace ProjOb_24L_01180781.AviationItems
 {
     public class Airport
-        : IAviationItem
+        : IAviationItem, IReportable
     {
         public string FtrAcronym { get; } = FtrAcronyms.Airport;
         public string TcpAcronym { get; } = TcpAcronyms.Airport;
@@ -27,6 +28,14 @@ namespace ProjOb_24L_01180781.AviationItems
             Code = code;
             Location = location;
             Country = country;
+        }
+        public string AcceptMediaReport(IMedia media)
+        {
+            return media.MakeReport(this);
+        }
+        public IAviationItem Copy()
+        {
+            return new Airport(Id, Name, Code, Location.Copy(), Country);
         }
     }
 }

@@ -4,6 +4,8 @@ using ProjOb_24L_01180781.Tcp;
 namespace ProjOb_24L_01180781.AviationItems
 {
     public interface IAviationItem
-        : IFtrItem, ITcpItem
-    { }
+        : IFtrItem, ITcpItem, IHasId
+    {
+        IAviationItem Copy();
+    }
 }

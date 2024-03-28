@@ -23,5 +23,9 @@ namespace ProjOb_24L_01180781.AviationItems
             Practice = practice;
             Role = role;
         }
+        public IAviationItem Copy()
+        {
+            return new Crew(Id, Name, Age, Phone, Email, Practice, Role);
+        }
     }
 }

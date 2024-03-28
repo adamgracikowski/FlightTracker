@@ -42,5 +42,16 @@ namespace ProjOb_24L_01180781.AviationItems
             TakeOffDateTime = takeOffDateTime;
             LandingDateTime = landingDateTime;
         }
+        public IAviationItem Copy()
+        {
+            UInt64[] copyCrewIds = new UInt64[CrewIds.Length];
+            Array.Copy(CrewIds, copyCrewIds, CrewIds.Length);
+            UInt64[] copyLoadIds = new UInt64[LoadIds.Length];
+            Array.Copy(LoadIds, copyLoadIds, LoadIds.Length);
+            return new Flight(Id, OriginId, TargetId,
+                TakeOffTime, LandingTime, Location.Copy(),
+                PlaneId, copyCrewIds, copyLoadIds,
+                TakeOffDateTime, LandingDateTime);
+        }
     }
 }
