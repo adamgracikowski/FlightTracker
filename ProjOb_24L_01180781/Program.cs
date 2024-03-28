@@ -1,7 +1,4 @@
-﻿//#define ETAP1
-#define ETAP2AND3
-
-using ProjOb_24L_01180781.Exceptions;
+﻿using ProjOb_24L_01180781.ConsoleManagement;
 using System.Globalization;
 
 namespace ProjOb_24L_01180781
@@ -12,37 +9,17 @@ namespace ProjOb_24L_01180781
         {
             var consoleManager = new ConsoleManager(args);
 
-            // changing culture options so that the decimal separator was set to '.'
+            //changing culture options so that the decimal separator was set to '.'
             consoleManager.SetCulture(new CultureInfo("en-US"));
 
-#if ETAP1
             try
             {
-                consoleManager.RunStage01();
-            }
-            catch (FtrFormatException ex)
-            {
-                Console.WriteLine($".ftr exception caught: {ex.Message}");
+                consoleManager.Run();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"exception caught: {ex.Message}");
+                Console.WriteLine(ex.Message);
             }
-#endif
-#if ETAP2AND3
-            try
-            {
-                consoleManager.RunStage02and03();
-            }
-            catch (TcpFormatException ex)
-            {
-                Console.WriteLine($"tcp exception caught: {ex.Message}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"exception caught: {ex.Message}");
-            }
-#endif
         }
     }
 }
