@@ -11,7 +11,7 @@ using NetworkSourceSimulator;
 using Nss = NetworkSourceSimulator;
 using ProjOb_24L_01180781.Factories;
 using ProjOb_24L_01180781.Exceptions;
-using ProjOb_24L_01180781.GUI;
+using ProjOb_24L_01180781.Database;
 
 
 namespace ProjOb_24L_01180781.DataManagers
