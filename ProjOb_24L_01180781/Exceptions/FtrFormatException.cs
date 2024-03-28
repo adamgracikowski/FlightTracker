@@ -1,4 +1,4 @@
-﻿using ProjOb_24L_01180781.Ftr;
+﻿using ProjOb_24L_01180781.DataSource.Ftr;
 
 namespace ProjOb_24L_01180781.Exceptions
 {

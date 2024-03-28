@@ -1,5 +1,5 @@
-﻿using ProjOb_24L_01180781.Ftr;
-using ProjOb_24L_01180781.Tcp;
+﻿using ProjOb_24L_01180781.DataSource.Ftr;
+using ProjOb_24L_01180781.DataSource.Tcp;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,14 +1,13 @@
 ﻿using ProjOb_24L_01180781.AviationItems;
+using ProjOb_24L_01180781.DataSource;
 using ProjOb_24L_01180781.Exceptions;
-using ProjOb_24L_01180781.Factories;
-using ProjOb_24L_01180781.Ftr;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProjOb_24L_01180781.DataManagers
+namespace ProjOb_24L_01180781.Ftr
 {
     /// <summary>
     /// Responsible for managing data that comes from .ftr files.

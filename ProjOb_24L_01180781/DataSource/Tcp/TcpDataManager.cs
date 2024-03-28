@@ -1,5 +1,4 @@
 ﻿using ProjOb_24L_01180781.AviationItems;
-using ProjOb_24L_01180781.Tcp;
 using ProjOb_24L_01180781.Tools;
 using System;
 using System.Collections.Generic;
@@ -9,12 +8,12 @@ using System.Threading.Tasks;
 using NetworkSourceSimulator;
 
 using Nss = NetworkSourceSimulator;
-using ProjOb_24L_01180781.Factories;
 using ProjOb_24L_01180781.Exceptions;
 using ProjOb_24L_01180781.Database;
+using ProjOb_24L_01180781.DataSource;
 
 
-namespace ProjOb_24L_01180781.DataManagers
+namespace ProjOb_24L_01180781.Tcp
 {
     /// <summary>
     /// Responsible for managing data that comes from TCP connection.
@@ -48,18 +47,15 @@ namespace ProjOb_24L_01180781.DataManagers
                         lastFactory = factory;
                         lastAcronym = acronym;
                     }
-                    var entity = factory.Create(message.MessageBytes);
-                    AviationDatabase.Add(entity);
+                    var item = factory.Create(message.MessageBytes);
+                    AviationDatabase.Add(item);
                 }
             };
         }
         public void TakeSnapshot(string? directoryPath = null)
         {
-            SnapshotDetails snapshotDetails;
-            lock (AviationDatabase.AviationItemsLock)
-            {
-                snapshotDetails = SnapshotManager.TakeSnapshot(AviationDatabase.AviationItems, directoryPath);
-            }
+            AviationDatabase.Synchronize();
+            var snapshotDetails = SnapshotManager.TakeSnapshot(AviationDatabase.CopyState(), directoryPath);
             Console.WriteLine($"Created: {snapshotDetails.Name}");
             Console.WriteLine($"Serialized: {snapshotDetails.CollectionCount} entities");
             Console.WriteLine($"Time taken: {snapshotDetails.TimeTaken.TotalMilliseconds} ms");
