@@ -22,6 +22,7 @@ namespace ProjOb_24L_01180781.GUI
                 return _worldPosition;
             }
         }
+
         public FlightDetails(Flight flight, Airport origin, Airport target)
             : base()
         {

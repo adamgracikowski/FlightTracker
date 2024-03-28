@@ -1,5 +1,6 @@
 ﻿using FlightTrackerGUI;
 using ProjOb_24L_01180781.Database;
+using ProjOb_24L_01180781.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -89,23 +90,45 @@ namespace ProjOb_24L_01180781.GUI
         }
         private void TimerCallback(object? state)
         {
-            AviationDatabase.SyncAviationItems();
+            AviationDatabase.Synchronize();
 
             List<FlightDetails> active;
-            lock (AviationDatabase.AviationItemsLock)
+            lock (AviationDatabase.FlightTable.Lock)
             {
+                SyncFlightDetails();
+
                 var now = DateTime.UtcNow;
-                active = AviationDatabase.FlightDetails.Where(flightDetail =>
-                        flightDetail.Flight.TakeOffDateTime <= now &&
-                        now <= flightDetail.Flight.LandingDateTime
-                    ).ToList();
+                active = _flightDetails.Where(flightDetail =>
+                    flightDetail.Flight.TakeOffDateTime <= now &&
+                    now <= flightDetail.Flight.LandingDateTime).ToList();
+
                 active.ForEach(FlightDetail => FlightDetail.UpdateFlightLocation());
             }
             Runner.UpdateGUI(new FlightsGuiDataAdapter(active));
         }
+        private static void SyncFlightDetails()
+        {
+            lock (AviationDatabase.FlightTable.Lock)
+            {
+                var toSync = AviationDatabase.FlightTable.Items[_startSyncFrom..];
 
+                _flightDetails.AddRange(toSync.Select(flight =>
+                {
+                    var origin = AviationDatabase.AirportTable.Find(flight.OriginId);
+                    var target = AviationDatabase.AirportTable.Find(flight.TargetId);
+                    if (origin is null || target is null)
+                        throw new TcpFormatException($"Could not find the airport for flight with ID = {flight.Id}.");
+                    return new FlightDetails(flight, origin, target);
+                }
+                ));
+                _startSyncFrom += toSync.Count;
+            }
+        }
+
+        private static List<FlightDetails> _flightDetails = new();
+        private static int _startSyncFrom = 0;
         private RunnerState _runnerState = RunnerState.NotUsed;
-        private readonly object _runnerStateLock = new();
+        private static readonly object _runnerStateLock = new();
         private static GuiManager? _instance;
         private readonly GuiTimer? _timer;
     }

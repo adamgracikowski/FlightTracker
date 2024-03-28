@@ -1,4 +1,4 @@
-﻿using ProjOb_24L_01180781.DataManagers;
+﻿using ProjOb_24L_01180781.DataSource.Tcp;
 
 namespace ProjOb_24L_01180781.ConsoleManagement.Commands
 {

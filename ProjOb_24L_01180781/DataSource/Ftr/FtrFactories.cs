@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProjOb_24L_01180781.Ftr
+namespace ProjOb_24L_01180781.DataSource.Ftr
 {
     public interface IFtrAviationFactory : IAviationFactory
     {

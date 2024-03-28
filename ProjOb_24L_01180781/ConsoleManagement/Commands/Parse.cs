@@ -1,7 +1,7 @@
 ﻿using ProjOb_24L_01180781.AviationItems;
 using ProjOb_24L_01180781.ConsoleManagement.Dialogs;
 using ProjOb_24L_01180781.Database;
-using ProjOb_24L_01180781.DataManagers;
+using ProjOb_24L_01180781.DataSource.Ftr;
 using System;
 using System.Collections.Generic;
 using System.Linq;

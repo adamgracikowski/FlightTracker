@@ -3,7 +3,7 @@ using ProjOb_24L_01180781.DataSource;
 using ProjOb_24L_01180781.Exceptions;
 using ProjOb_24L_01180781.Tools;
 
-namespace ProjOb_24L_01180781.Tcp
+namespace ProjOb_24L_01180781.DataSource.Tcp
 {
     public interface ITcpAviationFactory : IAviationFactory
     {

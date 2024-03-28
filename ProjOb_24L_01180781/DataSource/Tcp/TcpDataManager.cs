@@ -13,7 +13,7 @@ using ProjOb_24L_01180781.Database;
 using ProjOb_24L_01180781.DataSource;
 
 
-namespace ProjOb_24L_01180781.Tcp
+namespace ProjOb_24L_01180781.DataSource.Tcp
 {
     /// <summary>
     /// Responsible for managing data that comes from TCP connection.
