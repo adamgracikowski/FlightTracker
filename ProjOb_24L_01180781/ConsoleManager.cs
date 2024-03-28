@@ -1,4 +1,4 @@
-﻿using ProjOb_24L_01180781.ConsoleCommands;
+﻿using ProjOb_24L_01180781.ConsoleManagement.Commands;
 using ProjOb_24L_01180781.DataManagers;
 using ProjOb_24L_01180781.Exceptions;
 using ProjOb_24L_01180781.GUI;
