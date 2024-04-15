@@ -1,4 +1,5 @@
 ﻿using FlightTrackerGUI;
+using ProjOb_24L_01180781.AviationItems;
 using ProjOb_24L_01180781.Database;
 using ProjOb_24L_01180781.Exceptions;
 using System;
@@ -66,6 +67,7 @@ namespace ProjOb_24L_01180781.GUI
         private GuiManager()
         {
             _timer = new(TimerCallback, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+            AviationDatabase.FlightTable.ElementAdded += SyncFlightDetails;
         }
         private void RunContinuation(Task task)
         {
@@ -93,40 +95,39 @@ namespace ProjOb_24L_01180781.GUI
             AviationDatabase.Synchronize();
 
             List<FlightDetails> active;
-            lock (AviationDatabase.FlightTable.Lock)
+            lock (_flightDetailsLock)
             {
-                SyncFlightDetails();
-
                 var now = DateTime.UtcNow;
                 active = _flightDetails.Where(flightDetail =>
                     flightDetail.Flight.TakeOffDateTime <= now &&
                     now <= flightDetail.Flight.LandingDateTime).ToList();
 
                 active.ForEach(FlightDetail => FlightDetail.UpdateFlightLocation());
+                active.ForEach(FlightDetails => FlightDetails.UpdateFlightRotation());
             }
+
             Runner.UpdateGUI(new FlightsGuiDataAdapter(active));
         }
-        private static void SyncFlightDetails()
+        private static void SyncFlightDetails(object? sender, ElementAddedEventArgs<Flight> args)
         {
-            lock (AviationDatabase.FlightTable.Lock)
+            _flightDetails.AddRange(args.AddedElements.Select(flight =>
             {
-                var toSync = AviationDatabase.FlightTable.Items[_startSyncFrom..];
+                UInt64 id;
+                lock (flight.Lock)
+                    id = flight.Id;
+                var origin = AviationDatabase.AirportTable.Find(flight.OriginId);
+                var target = AviationDatabase.AirportTable.Find(flight.TargetId);
 
-                _flightDetails.AddRange(toSync.Select(flight =>
-                {
-                    var origin = AviationDatabase.AirportTable.Find(flight.OriginId);
-                    var target = AviationDatabase.AirportTable.Find(flight.TargetId);
-                    if (origin is null || target is null)
-                        throw new TcpFormatException($"Could not find the airport for flight with ID = {flight.Id}.");
-                    return new FlightDetails(flight, origin, target);
-                }
-                ));
-                _startSyncFrom += toSync.Count;
+                if (origin is null || target is null)
+                    throw new TcpFormatException($"Could not find the airport for flight with ID = {id}.");
+
+                return new FlightDetails(flight, origin, target);
             }
+            ));
         }
 
-        private static List<FlightDetails> _flightDetails = new();
-        private static int _startSyncFrom = 0;
+        private static List<FlightDetails> _flightDetails = [];
+        private static readonly object _flightDetailsLock = new();
         private RunnerState _runnerState = RunnerState.NotUsed;
         private static readonly object _runnerStateLock = new();
         private static GuiManager? _instance;
