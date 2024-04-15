@@ -32,7 +32,7 @@ namespace ProjOb_24L_01180781.ConsoleManagement.Commands
             Args = args;
             ExecutionCounter = 0;
         }
-        public void Execute()
+        public bool Execute()
         {
             var source = ConsoleDialog
                 .ReadWithPrompt("Please provide the path to the source file: ");
@@ -48,12 +48,13 @@ namespace ProjOb_24L_01180781.ConsoleManagement.Commands
             {
                 Console.WriteLine(ex.Message);
                 Console.WriteLine("Discarding changes in the database.");
-                return;
+                return false;
             }
 
             AviationDatabase.AddRange(entities);
             AviationDatabase.Synchronize();
             Console.WriteLine("Database updated.");
+            return true;
         }
     }
 }

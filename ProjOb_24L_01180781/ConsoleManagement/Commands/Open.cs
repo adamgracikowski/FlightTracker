@@ -27,7 +27,7 @@ namespace ProjOb_24L_01180781.ConsoleManagement.Commands
             Args = args;
             ExecutionCounter = 0;
         }
-        public void Execute()
+        public bool Execute()
         {
             if (Args.GuiManager.IsRunnerInUse)
             {
@@ -42,7 +42,9 @@ namespace ProjOb_24L_01180781.ConsoleManagement.Commands
             {
                 ExecutionCounter++;
                 Args.GuiManager.Run();
+                return true;
             }
+            return false;
         }
     }
 }

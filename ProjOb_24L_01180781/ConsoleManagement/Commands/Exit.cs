@@ -1,4 +1,5 @@
 ﻿using ProjOb_24L_01180781.GUI;
+using Splat;
 
 namespace ProjOb_24L_01180781.ConsoleManagement.Commands
 {
@@ -27,25 +28,45 @@ namespace ProjOb_24L_01180781.ConsoleManagement.Commands
             Args = args;
             ExecutionCounter = 0;
         }
-        public void Execute()
+        public bool Execute()
         {
             if (Args.GuiManager.IsRunnerInUse)
             {
                 Console.WriteLine("To exit the program, first close the radar window.");
+                return false;
             }
             else
             {
                 WaitForPrintTasks();
                 WaitForReportTasks();
+                WaitForLogTasks();
+
                 ExecutionCounter++;
+                return true;
             }
         }
+
         private void WaitForPrintTasks()
         {
             Console.WriteLine("Waiting for all the snapshots to finish...");
             try
             {
                 Task.WaitAll([.. Args.PrintTasks]);
+            }
+            catch (AggregateException ex)
+            {
+                foreach (var innerException in ex.InnerExceptions)
+                {
+                    Console.WriteLine(innerException.Message);
+                }
+            }
+        }
+        private static void WaitForLogTasks()
+        {
+            Console.WriteLine("Waiting for all the logs to finish...");
+            try
+            {
+                LogManager.GetInstance().Dispose();
             }
             catch (AggregateException ex)
             {

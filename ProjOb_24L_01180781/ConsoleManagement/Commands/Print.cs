@@ -26,11 +26,12 @@ namespace ProjOb_24L_01180781.ConsoleManagement.Commands
             Args = args;
             ExecutionCounter = 0;
         }
-        public void Execute()
+        public bool Execute()
         {
             // taking a snapshot takes place in a separate Task
             ExecutionCounter++;
             Args.Tasks.Add(Task.Factory.StartNew(() => Args.TcpManager.TakeSnapshot(Args.Directory)));
+            return true;
         }
     }
 }

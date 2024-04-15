@@ -30,7 +30,7 @@ namespace ProjOb_24L_01180781.ConsoleManagement.Commands
             Args = args;
             ExecutionCounter = 0;
         }
-        public void Execute()
+        public bool Execute()
         {
             ExecutionCounter++;
             AviationDatabase.Synchronize();
@@ -42,6 +42,7 @@ namespace ProjOb_24L_01180781.ConsoleManagement.Commands
                 while ((news = newsGenerator.GenerateNextNews()) is not null)
                     Console.WriteLine(news);
             }));
+            return true;
         }
     }
 }
