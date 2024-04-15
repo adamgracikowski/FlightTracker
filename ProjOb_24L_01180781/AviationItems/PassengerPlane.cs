@@ -17,6 +17,8 @@ namespace ProjOb_24L_01180781.AviationItems
         public string TcpAcronym { get; } = TcpAcronyms.PassengerPlane;
 
         public ClassSize ClassSize { get; private set; }
+        public object Lock { get; private set; } = new();
+
         public PassengerPlane(UInt64 id, string serial, string country, string model, ClassSize classSize)
             : base(id, serial, country, model)
         {

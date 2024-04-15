@@ -6,21 +6,27 @@ using System.Threading.Tasks;
 
 namespace ProjOb_24L_01180781.AviationItems
 {
-    public class Location
+    public class Position
     {
         public static readonly Single Unknown = 0;
         public Single Longitude { get; set; }
         public Single Latitude { get; set; }
         public Single Amsl { get; set; }
-        public Location(Single longitude, Single latitude, Single amsl)
+        public Position(Single longitude, Single latitude, Single amsl)
         {
             Longitude = longitude;
             Latitude = latitude;
             Amsl = amsl;
         }
-        public Location Copy()
+        public Position Copy()
         {
-            return new Location(Longitude, Latitude, Amsl);
+            return new Position(Longitude, Latitude, Amsl);
+        }
+        public void Update(Single longitude, Single latitude, Single? amsl = null)
+        {
+            Longitude = longitude;
+            Latitude = latitude;
+            Amsl = amsl ?? Amsl;
         }
     }
 }

@@ -17,6 +17,7 @@ namespace ProjOb_24L_01180781.AviationItems
         public string TcpAcronym { get; } = TcpAcronyms.CargoPlane;
 
         public Single MaxLoad { get; private set; }
+        public object Lock { get; private set; } = new();
 
         public CargoPlane(UInt64 id, string serial, string country, string model, Single maxLoad)
             : base(id, serial, country, model)

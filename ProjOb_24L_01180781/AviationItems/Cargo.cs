@@ -15,10 +15,11 @@ namespace ProjOb_24L_01180781.AviationItems
         public string FtrAcronym { get; } = FtrAcronyms.Cargo;
         public string TcpAcronym { get; } = TcpAcronyms.Cargo;
 
-        public UInt64 Id { get; private set; }
+        public UInt64 Id { get; set; }
         public Single Weight { get; private set; }
         public string Code { get; private set; }
         public string Description { get; private set; }
+        public object Lock { get; private set; } = new();
 
         public Cargo(UInt64 id, Single weight, string code, string description)
         {

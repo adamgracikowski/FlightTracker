@@ -203,7 +203,7 @@ namespace ProjOb_24L_01180781.DataSource.Tcp
             var country = bi.GetString(bytes, ref offset,
                 TcpMessageConstant.IsoCountryCodeLength);
 
-            return new Airport(id, name, code, new Location(longitude, latitude, amsl), country);
+            return new Airport(id, name, code, new Position(longitude, latitude, amsl), country);
         }
     }
     public class FlightTcpFactory : ITcpAviationFactory
@@ -240,9 +240,9 @@ namespace ProjOb_24L_01180781.DataSource.Tcp
             var crewIds = bi.GetUInt64(bytes, ref offset, crewIdsCount);
             var loadIdsCount = bi.GetUInt16(bytes, ref offset);
             var loadIds = bi.GetUInt64(bytes, ref offset, loadIdsCount);
-            var location = new Location(latitude: Location.Unknown,
-                                        longitude: Location.Unknown,
-                                        amsl: Location.Unknown);
+            var location = new Position(latitude: Position.Unknown,
+                                        longitude: Position.Unknown,
+                                        amsl: Position.Unknown);
 
             return new Flight(id, originId, targetId, takeOffTime, landingTime,
                               location, planeId, crewIds, loadIds, takeOffDateTime, landingDateTime);

@@ -10,25 +10,26 @@ using System.Threading.Tasks;
 namespace ProjOb_24L_01180781.AviationItems
 {
     public class Flight
-        : IAviationItem
+        : IAviationItem, IPositionable
     {
         public string FtrAcronym { get; } = FtrAcronyms.Flight;
         public string TcpAcronym { get; } = TcpAcronyms.Flight;
 
-        public UInt64 Id { get; private set; }
-        public UInt64 OriginId { get; private set; }
-        public UInt64 TargetId { get; private set; }
+        public UInt64 Id { get; set; }
+        public UInt64 OriginId { get; set; }
+        public UInt64 TargetId { get; set; }
         public string TakeOffTime { get; private set; }
         public string LandingTime { get; private set; }
         public DateTime TakeOffDateTime { get; private set; }
         public DateTime LandingDateTime { get; private set; }
-        public Location Location { get; set; }
-        public UInt64 PlaneId { get; private set; }
-        public UInt64[] CrewIds { get; private set; }
-        public UInt64[] LoadIds { get; private set; }
+        public Position Position { get; set; }
+        public UInt64 PlaneId { get; set; }
+        public UInt64[] CrewIds { get; set; }
+        public UInt64[] LoadIds { get; set; }
+        public object Lock { get; private set; } = new();
 
         public Flight(UInt64 id, UInt64 originId, UInt64 targetId, string takeOffTime, string landingTime,
-            Location location, UInt64 planeId, UInt64[] crewIds, UInt64[] loadIds,
+            Position position, UInt64 planeId, UInt64[] crewIds, UInt64[] loadIds,
             DateTime takeOffDateTime, DateTime landingDateTime)
         {
             Id = id;
@@ -36,7 +37,7 @@ namespace ProjOb_24L_01180781.AviationItems
             TargetId = targetId;
             TakeOffTime = takeOffTime;
             LandingTime = landingTime;
-            Location = location;
+            Position = position;
             PlaneId = planeId;
             CrewIds = crewIds;
             LoadIds = loadIds;
@@ -50,7 +51,7 @@ namespace ProjOb_24L_01180781.AviationItems
             UInt64[] copyLoadIds = new UInt64[LoadIds.Length];
             Array.Copy(LoadIds, copyLoadIds, LoadIds.Length);
             return new Flight(Id, OriginId, TargetId,
-                TakeOffTime, LandingTime, Location.Copy(),
+                TakeOffTime, LandingTime, Position.Copy(),
                 PlaneId, copyCrewIds, copyLoadIds,
                 TakeOffDateTime, LandingDateTime);
         }

@@ -17,6 +17,7 @@ namespace ProjOb_24L_01180781.AviationItems
 
         public string Class { get; private set; }
         public UInt64 Miles { get; private set; }
+        public object Lock { get; private set; } = new();
 
         public Passenger(UInt64 id, string name, UInt64 age, string phone, string email, string planeClass, UInt64 miles)
             : base(id, name, age, phone, email)

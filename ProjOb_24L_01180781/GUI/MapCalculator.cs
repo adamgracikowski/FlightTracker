@@ -5,7 +5,7 @@ namespace ProjOb_24L_01180781.GUI
 {
     public static class MapCalculator
     {
-        public static double CalculateRotation(Location origin, Location target)
+        public static double CalculateRotation(Position origin, Position target)
         {
             var (originX, originY) = SphericalMercator.FromLonLat(origin.Longitude, origin.Latitude);
             var (targetX, targetY) = SphericalMercator.FromLonLat(target.Longitude, target.Latitude);
@@ -17,7 +17,7 @@ namespace ProjOb_24L_01180781.GUI
         }
         public static (double longitude, double latitude) CalculateLocation
             (DateTime departure, DateTime arrival,
-            Location origin, Location target)
+            Position origin, Position target)
         {
             var now = DateTime.UtcNow;
             if (now <= departure)

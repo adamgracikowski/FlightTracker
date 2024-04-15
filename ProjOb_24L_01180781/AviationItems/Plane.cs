@@ -8,7 +8,7 @@ namespace ProjOb_24L_01180781.AviationItems
 {
     public abstract class Plane
     {
-        public UInt64 Id { get; private set; }
+        public UInt64 Id { get; set; }
         public string Serial { get; private set; }
         public string Country { get; private set; }
         public string Model { get; private set; }
