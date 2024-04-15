@@ -36,7 +36,6 @@ namespace ProjOb_24L_01180781.ConsoleManagement.Dialogs
         private static readonly Dictionary<string, SourceMode> _sourceModeDictionary = new()
         {
             { "ftr", SourceMode.Ftr },
-            { "tcp", SourceMode.Tcp },
             { "exit", SourceMode.None }
         };
     }
