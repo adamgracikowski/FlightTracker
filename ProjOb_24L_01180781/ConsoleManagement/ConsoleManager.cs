@@ -38,11 +38,13 @@ namespace ProjOb_24L_01180781.ConsoleManagement
         }
 
         public SourceMode SourceMode { get; private set; }
-        public string SourceFile { get; private set; } = string.Empty;
+        public string FtrFile { get; private set; } = string.Empty;
+        public string FtreFile { get; private set; } = string.Empty;
         public int MinTcpDelay { get; init; }
         public int MaxTcpDelay { get; init; }
         public FtrDataManager FtrManager { get; init; } = new();
         public TcpDataManager TcpManager { get; init; } = new();
+        public FtreDataManager FtreManager { get; init; } = new();
         public GuiManager GuiManager { get; init; } = GuiManager.GetInstance();
         public List<Task> PrintTasks { get; private set; } = [];
         public List<Task> ReportTasks { get; private set; } = [];
@@ -51,15 +53,26 @@ namespace ProjOb_24L_01180781.ConsoleManagement
         public Dictionary<SourceMode, Action> SourceModeActions { get; private set; } = [];
         public string SnapshotsDirectory { get; private set; }
 
-        private void RunTcp()
+        private void RunFtr()
         {
-            SourceFile = ConsoleDialog
-                .ReadWithPrompt("Please provide the path to the source file: ");
+            var parse = CommandDictionary[Parse.ConsoleText];
+            while (!parse.Execute())
+            {
+                SourceMode = new SourceModeDialog().PerformDialog();
+                if (SourceMode == SourceMode.None)
+                {
+                    RunNone();
+                    return;
+                }
+            }
+
+            FtreFile = ConsoleDialog
+                .ReadWithPrompt("Please provide the path to the .ftre file: ");
             Nss.NetworkSourceSimulator networkSource;
 
             try
             {
-                networkSource = new Nss.NetworkSourceSimulator(SourceFile, MinTcpDelay, MaxTcpDelay);
+                networkSource = new Nss.NetworkSourceSimulator(FtreFile, MinTcpDelay, MaxTcpDelay);
             }
             catch (Exception e)
             {
@@ -69,9 +82,8 @@ namespace ProjOb_24L_01180781.ConsoleManagement
             }
 
             Console.WriteLine("Estabilishing TCP connection...");
-            TcpManager.SubscribeToNetworkSource(networkSource);
-
-            var runTask = TcpManager.RunNetworkSource(networkSource);
+            FtreManager.SubscribeToNetworkSource(networkSource);
+            var runTask = FtreManager.RunNetworkSource(networkSource);
 
             Console.WriteLine("Connection estabilished successfully.");
             Console.WriteLine($"Estimated speed: [{MinTcpDelay}, {MaxTcpDelay}] ms");
@@ -93,15 +105,6 @@ namespace ProjOb_24L_01180781.ConsoleManagement
             }
             Console.WriteLine("Exiting!");
             Environment.Exit(0);
-        }
-        private void RunFtr()
-        {
-            var parse = CommandDictionary[Parse.ConsoleText];
-
-            parse.Execute();
-            DialogLoop();
-
-            Console.WriteLine("Exiting!");
         }
         private void RunNone()
         {
@@ -129,7 +132,6 @@ namespace ProjOb_24L_01180781.ConsoleManagement
         {
             SourceModeActions = new Dictionary<SourceMode, Action>
             {
-                { SourceMode.Tcp, RunTcp },
                 { SourceMode.Ftr, RunFtr },
                 { SourceMode.None, RunNone }
             };
@@ -164,6 +166,51 @@ namespace ProjOb_24L_01180781.ConsoleManagement
             {
                 Console.WriteLine($"> {key}");
             }
+        }
+
+        [Obsolete("This method is deprecated since NetworkSourceSimulator no longer has the constructor with .ftr file as parameter")]
+        private void RunTcp()
+        {
+            FtrFile = ConsoleDialog
+                .ReadWithPrompt("Please provide the path to the source file: ");
+            Nss.NetworkSourceSimulator networkSource;
+
+            try
+            {
+                networkSource = new Nss.NetworkSourceSimulator(FtrFile, MinTcpDelay, MaxTcpDelay);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Estabilishing TCP connection failed due to:");
+                Console.WriteLine(e.Message);
+                return;
+            }
+
+            Console.WriteLine("Estabilishing TCP connection...");
+            TcpManager.SubscribeToNetworkSource(networkSource);
+
+            var runTask = TcpManager.RunNetworkSource(networkSource);
+
+            Console.WriteLine("Connection estabilished successfully.");
+            Console.WriteLine($"Estimated speed: [{MinTcpDelay}, {MaxTcpDelay}] ms");
+
+            DialogLoop();
+
+            Console.WriteLine("Checking TCP connection for possible failures...");
+            var ex = runTask.Exception;
+            if (ex != null)
+            {
+                foreach (var innerException in ex.InnerExceptions)
+                {
+                    Console.WriteLine(innerException.Message);
+                }
+            }
+            else
+            {
+                Console.WriteLine("No failures detected.");
+            }
+            Console.WriteLine("Exiting!");
+            Environment.Exit(0);
         }
 
         private static readonly char _separator = ',';
