@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProjOb_24L_01180781.Database
+namespace ProjOb_24L_01180781.AviationItems.Interfaces
 {
-    public interface IHasId
+    public interface ILockable
     {
-        UInt64 Id { get; }
+        object Lock { get; }
     }
 }
