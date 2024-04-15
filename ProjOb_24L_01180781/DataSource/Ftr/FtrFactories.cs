@@ -99,7 +99,7 @@ namespace ProjOb_24L_01180781.DataSource.Ftr
                 id: ulong.Parse(itemDetails[1]),
                 name: itemDetails[2],
                 code: itemDetails[3],
-                location: new Position(
+                position: new Position(
                     longitude: float.Parse(itemDetails[4]),
                     latitude: float.Parse(itemDetails[5]),
                     amsl: float.Parse(itemDetails[6])),
@@ -129,7 +129,7 @@ namespace ProjOb_24L_01180781.DataSource.Ftr
                 targetId: ulong.Parse(itemDetails[3]),
                 takeOffTime: takeOffTime,
                 landingTime: landingTime,
-                location: new Position(
+                position: new Position(
                     longitude: float.Parse(itemDetails[6]),
                     latitude: float.Parse(itemDetails[7]),
                     amsl: float.Parse(itemDetails[8])),

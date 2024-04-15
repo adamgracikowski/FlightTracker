@@ -24,6 +24,8 @@ namespace ProjOb_24L_01180781.DataSource.Tcp
         {
             return Task.Factory.StartNew(networkSource.Run);
         }
+
+        [Obsolete("This method is deprecated since NetworkSourceSimulator no longer has the constructor with .ftr file as parameter")]
         public void SubscribeToNetworkSource(Nss.NetworkSourceSimulator networkSource)
         {
             var lastAcronym = TcpAcronyms.Airport;

@@ -240,12 +240,12 @@ namespace ProjOb_24L_01180781.DataSource.Tcp
             var crewIds = bi.GetUInt64(bytes, ref offset, crewIdsCount);
             var loadIdsCount = bi.GetUInt16(bytes, ref offset);
             var loadIds = bi.GetUInt64(bytes, ref offset, loadIdsCount);
-            var location = new Position(latitude: Position.Unknown,
+            var position = new Position(latitude: Position.Unknown,
                                         longitude: Position.Unknown,
                                         amsl: Position.Unknown);
 
             return new Flight(id, originId, targetId, takeOffTime, landingTime,
-                              location, planeId, crewIds, loadIds, takeOffDateTime, landingDateTime);
+                              position, planeId, crewIds, loadIds, takeOffDateTime, landingDateTime);
         }
     }
 }
