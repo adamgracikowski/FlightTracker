@@ -4,6 +4,7 @@ using ProjOb_24L_01180781.DataSource.Tcp;
 using ProjOb_24L_01180781.Exceptions;
 using ProjOb_24L_01180781.GUI;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,45 +14,57 @@ namespace ProjOb_24L_01180781.Database
 {
     public static class AviationDatabase
     {
+        public static ConcurrentDictionary<UInt64, IAviationItem> AllItems { get; private set; } = [];
+        public static DatabaseTable5<Airport> AirportTable { get; private set; }
+            = new(TcpAcronyms.Airport, "Airport");
+        public static DatabaseTable5<Cargo> CargoTable { get; private set; }
+            = new(TcpAcronyms.Cargo, "Cargo");
+        public static DatabaseTable5<CargoPlane> CargoPlaneTable { get; private set; }
+            = new(TcpAcronyms.CargoPlane, "CargoPlane");
+        public static DatabaseTable5<Crew> CrewTable { get; private set; }
+            = new(TcpAcronyms.Crew, "Crew");
+        public static DatabaseTable5<Flight> FlightTable { get; private set; }
+            = new(TcpAcronyms.Flight, "Flight");
+        public static DatabaseTable5<Passenger> PassengerTable { get; private set; }
+            = new(TcpAcronyms.Passenger, "Passenger");
+        public static DatabaseTable5<PassengerPlane> PassengerPlaneTable { get; private set; }
+            = new(TcpAcronyms.PassengerPlane, "PassengerPlane");
+
+        public static void Synchronize()
+        {
+            lock (_cacheLock)
+            {
+                foreach (var entity in _cache)
+                    AllItems.TryAdd(entity.Id, entity);
+
+                AirportTable.AddRange(_cache);
+                CargoTable.AddRange(_cache);
+                CargoPlaneTable.AddRange(_cache);
+                CrewTable.AddRange(_cache);
+                FlightTable.AddRange(_cache);
+                PassengerTable.AddRange(_cache);
+                PassengerPlaneTable.AddRange(_cache);
+
+                _cache.Clear();
+            }
+        }
         public static void Add(IAviationItem item)
         {
-            lock (AviationItemsLock)
-            {
-                AviationItems.Add(item);
-            }
+            lock (_cacheLock)
+                _cache.Add(item);
         }
         public static void AddRange(IEnumerable<IAviationItem> items)
         {
-            lock (AviationItemsLock)
-            {
-                AviationItems.AddRange(items);
-            }
-        }
-        public static void Synchronize()
-        {
-            lock (AviationItemsLock)
-            {
-                AirportTable.AddRange(AviationItems);
-                CargoTable.AddRange(AviationItems);
-                CargoPlaneTable.AddRange(AviationItems);
-                CrewTable.AddRange(AviationItems);
-                FlightTable.AddRange(AviationItems);
-                PassengerTable.AddRange(AviationItems);
-                PassengerPlaneTable.AddRange(AviationItems);
-                AviationItems.Clear();
-            }
+            lock (_cacheLock)
+                _cache.AddRange(items);
         }
         public static List<IAviationItem> CopyState()
         {
-            var state = new List<IAviationItem>();
-            AirportTable.CopyTo(state);
-            CargoTable.CopyTo(state);
-            CargoPlaneTable.CopyTo(state);
-            CrewTable.CopyTo(state);
-            FlightTable.CopyTo(state);
-            PassengerTable.CopyTo(state);
-            PassengerPlaneTable.CopyTo(state);
-            return state;
+            return AllItems.Select(item =>
+            {
+                lock (item.Value.Lock)
+                    return item.Value.Copy();
+            }).ToList();
         }
         public static List<IAviationItem> CopyReportable()
         {
@@ -61,23 +74,16 @@ namespace ProjOb_24L_01180781.Database
             PassengerPlaneTable.CopyTo(reportable);
             return reportable;
         }
+        public static IAviationItem? Find(UInt64 id)
+        {
+            if (AllItems.TryGetValue(id, out var item) && item is not null)
+            {
+                return item;
+            }
+            else return null;
+        }
 
-        public static List<IAviationItem> AviationItems { get; private set; } = new();
-        public static readonly object AviationItemsLock = new();
-
-        public static DatabaseTable<Airport> AirportTable { get; private set; }
-            = new(TcpAcronyms.Airport, "Airport");
-        public static DatabaseTable<Cargo> CargoTable { get; private set; }
-            = new(TcpAcronyms.Cargo, "Cargo");
-        public static DatabaseTable<CargoPlane> CargoPlaneTable { get; private set; }
-            = new(TcpAcronyms.CargoPlane, "CargoPlane");
-        public static DatabaseTable<Crew> CrewTable { get; private set; }
-            = new(TcpAcronyms.Crew, "Crew");
-        public static DatabaseTable<Flight> FlightTable { get; private set; }
-            = new(TcpAcronyms.Flight, "Flight");
-        public static DatabaseTable<Passenger> PassengerTable { get; private set; }
-            = new(TcpAcronyms.Passenger, "Passenger");
-        public static DatabaseTable<PassengerPlane> PassengerPlaneTable { get; private set; }
-            = new(TcpAcronyms.PassengerPlane, "PassengerPlane");
+        private static List<IAviationItem> _cache { get; set; } = [];
+        private static readonly object _cacheLock = new();
     }
 }
