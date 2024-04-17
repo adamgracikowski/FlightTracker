@@ -43,12 +43,13 @@ namespace ProjOb_24L_01180781.GUI
             Flight = flight;
             Origin = origin;
             Target = target;
-            MapCoordRotation = MapCalculator.CalculateRotation(Origin.Position, Target.Position);
+
+            UpdateFlightRotation();
         }
-        public void UpdateFlightLocation()
+        public void UpdateFlightPosition()
         {
             Position origin, target;
-            DateTime takeOffDateTime, landingDateTime;
+            DateTime departure, arrival;
 
             lock (Origin.Lock)
                 origin = Origin.Position.Copy();
@@ -56,18 +57,12 @@ namespace ProjOb_24L_01180781.GUI
                 target = Target.Position.Copy();
             lock (Flight.Lock)
             {
-                takeOffDateTime = Flight.TakeOffDateTime;
-                landingDateTime = Flight.LandingDateTime;
+                departure = Flight.TakeOffDateTime;
+                arrival = Flight.LandingDateTime;
             }
-
-            var (longitude, latitude) = MapCalculator.CalculateLocation(
-                Flight.TakeOffDateTime, Flight.LandingDateTime, Origin.Position, Target.Position);
-
+            var (longitude, latitude) = MapCalculator.CalculatePosition(departure, arrival, origin, target);
             lock (Flight.Lock)
-            {
-                Flight.Position.Longitude = (Single)longitude;
-                Flight.Position.Latitude = (Single)latitude;
-            }
+                Flight.Position.Update((Single)longitude, (Single)latitude);
         }
         public void UpdateFlightRotation()
         {
@@ -76,7 +71,6 @@ namespace ProjOb_24L_01180781.GUI
                 origin = Origin.Position.Copy();
             lock (Target.Lock)
                 target = Target.Position.Copy();
-
             MapCoordRotation = MapCalculator.CalculateRotation(origin, target);
         }
 

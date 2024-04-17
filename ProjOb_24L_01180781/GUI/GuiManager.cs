@@ -102,7 +102,7 @@ namespace ProjOb_24L_01180781.GUI
                     flightDetail.Flight.TakeOffDateTime <= now &&
                     now <= flightDetail.Flight.LandingDateTime).ToList();
 
-                active.ForEach(FlightDetail => FlightDetail.UpdateFlightLocation());
+                active.ForEach(FlightDetail => FlightDetail.UpdateFlightPosition());
                 active.ForEach(FlightDetails => FlightDetails.UpdateFlightRotation());
             }
 

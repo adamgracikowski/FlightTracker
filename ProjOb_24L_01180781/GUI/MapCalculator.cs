@@ -15,7 +15,7 @@ namespace ProjOb_24L_01180781.GUI
 
             return rotation;
         }
-        public static (double longitude, double latitude) CalculateLocation
+        public static (double longitude, double latitude) CalculatePosition
             (DateTime departure, DateTime arrival,
             Position origin, Position target)
         {
