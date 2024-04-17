@@ -48,16 +48,18 @@ namespace ProjOb_24L_01180781.DataSource.Ftre
             string log;
             var item = AviationDatabase.Find(args.ObjectID);
             if (item is null || !(item.FtrAcronym == FtrAcronyms.Airport || item.FtrAcronym == FtrAcronyms.Flight))
-                log = $"{UpdateStatus.Failure} | {args.Longitude};{args.Latitude};{args.AMSL}";
+                log = $"{UpdateStatus.Failure} | {args.ObjectID}; {args.Longitude}; {args.Latitude}; {args.AMSL}";
             else
             {
                 var positionable = (IPositionable)item;
                 lock (item.Lock)
                 {
+                    var oldPosition = positionable.Position.Copy();
                     positionable.Position.Update(args.Longitude, args.Latitude, args.AMSL);
-                    log = $"{UpdateStatus.Success} | {positionable.Position.Longitude} --> {args.Longitude}; " +
-                        $"{positionable.Position.Latitude} --> {args.Latitude}; " +
-                        $"{positionable.Position.Amsl} --> {args.AMSL}";
+                    log = $"{UpdateStatus.Success} | {args.ObjectID}; " +
+                        $"{oldPosition.Longitude} --> {args.Longitude}; " +
+                        $"{oldPosition.Latitude} --> {args.Latitude}; " +
+                        $"{oldPosition.Amsl} --> {args.AMSL}";
                 }
             }
             Console.WriteLine(log);
@@ -68,7 +70,8 @@ namespace ProjOb_24L_01180781.DataSource.Ftre
             string log;
             var item = AviationDatabase.Find(args.ObjectID);
             if (item is null || !(item.FtrAcronym == FtrAcronyms.Passenger || item.FtrAcronym == FtrAcronyms.Crew))
-                log = $"{UpdateStatus.Failure} | {args.PhoneNumber}; {args.EmailAddress}";
+                log = $"{UpdateStatus.Failure} | {args.ObjectID}; " +
+                    $"{args.PhoneNumber}; {args.EmailAddress}";
             else
             {
                 var contactable = (IContactable)item;
@@ -80,12 +83,14 @@ namespace ProjOb_24L_01180781.DataSource.Ftre
                         var oldEmail = contactable.Email;
                         contactable.Phone = args.PhoneNumber;
                         contactable.Email = args.EmailAddress;
-                        log = $"{UpdateStatus.Success} | {oldPhone} --> {args.PhoneNumber}; " +
+                        log = $"{UpdateStatus.Success} | {args.ObjectID}; " +
+                            $"{oldPhone} --> {args.PhoneNumber}; " +
                             $"{oldEmail} --> {args.EmailAddress}";
                     }
                     catch (InvalidDataException)
                     {
-                        log = $"{UpdateStatus.Failure} | {args.PhoneNumber}; {args.EmailAddress}";
+                        log = $"{UpdateStatus.Failure} | {args.ObjectID}; " +
+                            $"{args.PhoneNumber}; {args.EmailAddress}";
                     }
                 }
             }
@@ -186,16 +191,23 @@ namespace ProjOb_24L_01180781.DataSource.Ftre
         private static bool RemoveAndAdd<T>(UInt64 id, DatabaseTable5<T> table)
             where T : class?, IAviationItem
         {
-            if (table.Items.Remove(id, out var item) && item is not null)
+            if (!table.Items.Remove(id, out var item) || item is null)
+                return false;
+            if (!AviationDatabase.AllItems.Remove(id, out _))
+                return false;
+
+            lock (item.Lock)
             {
-                lock (item.Lock)
+                if (!table.Items.TryAdd(item.Id, item))
+                    return false;
+                if (!AviationDatabase.AllItems.TryAdd(item.Id, item))
                 {
-                    if (!table.Items.TryAdd(item.Id, item))
-                        return false;
+                    table.Items.Remove(item.Id, out _);
+                    return false;
                 }
-                return true;
             }
-            return false;
+
+            return true;
         }
 
         private static readonly Dictionary<string, Func<IDUpdateArgs, IAviationItem, bool>> _idUpdateDictionary = new()
