@@ -48,18 +48,30 @@ namespace ProjOb_24L_01180781.DataSource.Ftre
             string log;
             var item = AviationDatabase.Find(args.ObjectID);
             if (item is null || !(item.FtrAcronym == FtrAcronyms.Airport || item.FtrAcronym == FtrAcronyms.Flight))
-                log = $"{UpdateStatus.Failure} | {args.ObjectID}; {args.Longitude}; {args.Latitude}; {args.AMSL}";
+            {
+                log = $"{UpdateStatus.Failure} | {args.ObjectID}; " +
+                    $"{args.Longitude}; {args.Latitude}; {args.AMSL}";
+            }
             else
             {
                 var positionable = (IPositionable)item;
                 lock (item.Lock)
                 {
-                    var oldPosition = positionable.Position.Copy();
-                    positionable.Position.Update(args.Longitude, args.Latitude, args.AMSL);
-                    log = $"{UpdateStatus.Success} | {args.ObjectID}; " +
-                        $"{oldPosition.Longitude} --> {args.Longitude}; " +
-                        $"{oldPosition.Latitude} --> {args.Latitude}; " +
-                        $"{oldPosition.Amsl} --> {args.AMSL}";
+                    try
+                    {
+                        var oldPosition = positionable.GetPosition();
+                        positionable.UpdatePosition(args.Longitude, args.Latitude, args.AMSL);
+
+                        log = $"{UpdateStatus.Success} | {args.ObjectID}; " +
+                            $"{oldPosition.Longitude} --> {args.Longitude}; " +
+                            $"{oldPosition.Latitude} --> {args.Latitude}; " +
+                            $"{oldPosition.Amsl} --> {args.AMSL}";
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        log = $"{UpdateStatus.Failure} | {args.ObjectID}; " +
+                            $"{args.Longitude}; {args.Latitude}; {args.AMSL}";
+                    }
                 }
             }
             Console.WriteLine(log);
@@ -87,7 +99,7 @@ namespace ProjOb_24L_01180781.DataSource.Ftre
                             $"{oldPhone} --> {args.PhoneNumber}; " +
                             $"{oldEmail} --> {args.EmailAddress}";
                     }
-                    catch (InvalidDataException)
+                    catch (InvalidOperationException)
                     {
                         log = $"{UpdateStatus.Failure} | {args.ObjectID}; " +
                             $"{args.PhoneNumber}; {args.EmailAddress}";
