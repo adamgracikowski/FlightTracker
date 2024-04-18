@@ -39,5 +39,15 @@ namespace ProjOb_24L_01180781.AviationItems
         {
             return new Airport(Id, Name, Code, Position.Copy(), Country);
         }
+
+        public void UpdatePosition(float longitude, float latitude, float? amsl = null)
+        {
+            Position.Update(longitude, latitude, amsl);
+        }
+
+        public Position GetPosition()
+        {
+            return Position.Copy();
+        }
     }
 }

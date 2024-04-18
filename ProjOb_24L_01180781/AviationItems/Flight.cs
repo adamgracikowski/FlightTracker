@@ -22,7 +22,10 @@ namespace ProjOb_24L_01180781.AviationItems
         public string LandingTime { get; private set; }
         public DateTime TakeOffDateTime { get; private set; }
         public DateTime LandingDateTime { get; private set; }
+        public DateTime StartingDateTime { get; set; }
         public Position Position { get; set; }
+        public Position StartingPosition { get; set; }
+            = new(Position.Unknown, Position.Unknown, Position.Unknown);
         public UInt64 PlaneId { get; set; }
         public UInt64[] CrewIds { get; set; }
         public UInt64[] LoadIds { get; set; }
@@ -54,6 +57,16 @@ namespace ProjOb_24L_01180781.AviationItems
                 TakeOffTime, LandingTime, Position.Copy(),
                 PlaneId, copyCrewIds, copyLoadIds,
                 TakeOffDateTime, LandingDateTime);
+        }
+        public void UpdatePosition(Single longitude, Single latitude, Single? amsl = null)
+        {
+            Position.Update(longitude, latitude, amsl);
+            StartingPosition.Update(longitude, latitude, amsl);
+            StartingDateTime = DateTime.UtcNow;
+        }
+        public Position GetPosition()
+        {
+            return Position.Copy();
         }
     }
 }

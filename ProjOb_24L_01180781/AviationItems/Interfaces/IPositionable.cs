@@ -8,6 +8,7 @@ namespace ProjOb_24L_01180781.AviationItems.Interfaces
 {
     public interface IPositionable
     {
-        Position Position { get; set; }
+        Position GetPosition();
+        void UpdatePosition(Single longitude, Single latitude, Single? amsl = null);
     }
 }

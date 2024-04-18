@@ -20,7 +20,7 @@ namespace ProjOb_24L_01180781.AviationItems
             {
                 if (Regex.IsMatch(value, _phonePattern))
                     _phone = value;
-                else throw new InvalidDataException("invalid phone number");
+                else throw new InvalidOperationException("invalid phone number");
             }
         }
         public string Email
@@ -30,7 +30,7 @@ namespace ProjOb_24L_01180781.AviationItems
             {
                 if (Regex.IsMatch(value, _emailPattern))
                     _email = value;
-                else throw new InvalidDataException("invalid email address");
+                else throw new InvalidOperationException("invalid email address");
             }
         }
 
