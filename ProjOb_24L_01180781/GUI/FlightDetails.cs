@@ -44,9 +44,10 @@ namespace ProjOb_24L_01180781.GUI
             Origin = origin;
             Target = target;
 
+            SetInitialPosition();
             UpdateFlightRotation();
         }
-        public void UpdateFlightPosition()
+        private void SetInitialPosition()
         {
             Position origin, target;
             DateTime departure, arrival;
@@ -60,18 +61,37 @@ namespace ProjOb_24L_01180781.GUI
                 departure = Flight.TakeOffDateTime;
                 arrival = Flight.LandingDateTime;
             }
+
             var (longitude, latitude) = MapCalculator.CalculatePosition(departure, arrival, origin, target);
+
+            lock (Flight.Lock)
+                Flight.UpdatePosition((Single)longitude, (Single)latitude);
+        }
+        public void UpdateFlightPosition()
+        {
+            Position current, target;
+            DateTime departure, arrival;
+
+            lock (Target.Lock)
+                target = Target.Position.Copy();
+            lock (Flight.Lock)
+            {
+                current = Flight.StartingPosition.Copy();
+                departure = Flight.StartingDateTime;
+                arrival = Flight.LandingDateTime;
+            }
+            var (longitude, latitude) = MapCalculator.CalculatePosition(departure, arrival, current, target);
             lock (Flight.Lock)
                 Flight.Position.Update((Single)longitude, (Single)latitude);
         }
         public void UpdateFlightRotation()
         {
-            Position origin, target;
-            lock (Origin.Lock)
-                origin = Origin.Position.Copy();
+            Position current, target;
+            lock (Flight.Lock)
+                current = Flight.Position.Copy();
             lock (Target.Lock)
                 target = Target.Position.Copy();
-            MapCoordRotation = MapCalculator.CalculateRotation(origin, target);
+            MapCoordRotation = MapCalculator.CalculateRotation(current, target);
         }
 
         private WorldPosition _worldPosition;
