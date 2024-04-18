@@ -4,7 +4,6 @@ using NetworkSourceSimulator;
 using ProjOb_24L_01180781.AviationItems.Interfaces;
 using ProjOb_24L_01180781.Database;
 using ProjOb_24L_01180781.DataSource.Ftr;
-using System.Diagnostics;
 using Nss = NetworkSourceSimulator;
 
 namespace ProjOb_24L_01180781.DataSource.Ftre
