@@ -1,14 +1,10 @@
-﻿using NetworkSourceSimulator;
+﻿#define DEBUGLOG
+
+using NetworkSourceSimulator;
 using ProjOb_24L_01180781.AviationItems.Interfaces;
 using ProjOb_24L_01180781.Database;
 using ProjOb_24L_01180781.DataSource.Ftr;
-using Splat;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using System.Diagnostics;
 using Nss = NetworkSourceSimulator;
 
 namespace ProjOb_24L_01180781.DataSource.Ftre
@@ -40,7 +36,8 @@ namespace ProjOb_24L_01180781.DataSource.Ftre
                 status = UpdateStatus.Failure;
 
             var log = $"{status} | {args.ObjectID}; {args.NewObjectID}";
-            Console.WriteLine(log);
+
+            DebugLog(log);
             _logManager.Write(log);
         }
         private static void UpdatePosition(object? sender, PositionUpdateArgs args)
@@ -74,7 +71,8 @@ namespace ProjOb_24L_01180781.DataSource.Ftre
                     }
                 }
             }
-            Console.WriteLine(log);
+
+            DebugLog(log);
             _logManager.Write(log);
         }
         private static void UpdateContactInfo(object? sender, ContactInfoUpdateArgs args)
@@ -106,7 +104,8 @@ namespace ProjOb_24L_01180781.DataSource.Ftre
                     }
                 }
             }
-            Console.WriteLine(log);
+
+            DebugLog(log);
             _logManager.Write(log);
         }
         private static bool UpdateAirportId(IDUpdateArgs args, IAviationItem item)
@@ -233,5 +232,12 @@ namespace ProjOb_24L_01180781.DataSource.Ftre
             { FtrAcronyms.PassengerPlane, UpdatePlaneId }
         };
         private static LogManager _logManager { get; set; } = LogManager.GetInstance();
+
+        private static void DebugLog(string log)
+        {
+#if DEBUGLOG
+            Console.WriteLine(log);
+#endif // Debug
+        }
     }
 }
