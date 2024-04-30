@@ -27,8 +27,11 @@ namespace ProjOb_24L_01180781.ConsoleManagement.Commands
             Args = args;
             ExecutionCounter = 0;
         }
-        public bool Execute()
+        public bool Execute(string line)
         {
+            if (!line.StartsWith(ConsoleText, StringComparison.InvariantCultureIgnoreCase))
+                throw new InvalidOperationException();
+
             if (Args.GuiManager.IsRunnerInUse)
             {
                 Console.WriteLine("The radar window is currently opened.");

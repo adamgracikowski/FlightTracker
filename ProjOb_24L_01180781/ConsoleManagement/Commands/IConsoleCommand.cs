@@ -5,7 +5,7 @@
     /// </summary>
     public interface IConsoleCommand
     {
-        bool Execute();
+        bool Execute(string line);
         ulong ExecutionCounter { get; }
         bool Executed { get; }
     }

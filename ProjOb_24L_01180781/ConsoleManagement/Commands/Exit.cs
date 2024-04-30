@@ -1,5 +1,6 @@
 ﻿using ProjOb_24L_01180781.DataSource.Ftre;
 using ProjOb_24L_01180781.GUI;
+using ProjOb_24L_01180781.Tools;
 using Splat;
 
 namespace ProjOb_24L_01180781.ConsoleManagement.Commands
@@ -9,11 +10,13 @@ namespace ProjOb_24L_01180781.ConsoleManagement.Commands
     {
         public List<Task> PrintTasks { get; set; }
         public List<Task> ReportTasks { get; set; }
+        public List<Task> QueryTasks { get; set; }
         public GuiManager GuiManager { get; set; }
-        public ExitArgs(List<Task> printTasks, List<Task> reportTasks, GuiManager guiManager)
+        public ExitArgs(List<Task> printTasks, List<Task> reportTasks, List<Task> queryTasks, GuiManager guiManager)
         {
             PrintTasks = printTasks;
             ReportTasks = reportTasks;
+            QueryTasks = queryTasks;
             GuiManager = guiManager;
         }
     }
@@ -27,10 +30,12 @@ namespace ProjOb_24L_01180781.ConsoleManagement.Commands
         public Exit(ExitArgs args)
         {
             Args = args;
-            ExecutionCounter = 0;
         }
-        public bool Execute()
+        public bool Execute(string line)
         {
+            if (!line.StartsWith(ConsoleText, StringComparison.InvariantCultureIgnoreCase))
+                throw new InvalidOperationException();
+
             if (Args.GuiManager.IsRunnerInUse)
             {
                 Console.WriteLine("To exit the program, first close the radar window.");
@@ -41,6 +46,7 @@ namespace ProjOb_24L_01180781.ConsoleManagement.Commands
                 WaitForPrintTasks();
                 WaitForReportTasks();
                 WaitForLogTasks();
+                WaitForQueryTasks();
 
                 ExecutionCounter++;
                 return true;
@@ -53,6 +59,21 @@ namespace ProjOb_24L_01180781.ConsoleManagement.Commands
             try
             {
                 Task.WaitAll([.. Args.PrintTasks]);
+            }
+            catch (AggregateException ex)
+            {
+                foreach (var innerException in ex.InnerExceptions)
+                {
+                    Console.WriteLine(innerException.Message);
+                }
+            }
+        }
+        private void WaitForQueryTasks()
+        {
+            Console.WriteLine("Waiting for all the queries to finish...");
+            try
+            {
+                Task.WaitAll([.. Args.QueryTasks]);
             }
             catch (AggregateException ex)
             {

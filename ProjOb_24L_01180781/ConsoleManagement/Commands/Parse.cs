@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ProjOb_24L_01180781.ConsoleManagement.Commands
@@ -32,10 +33,13 @@ namespace ProjOb_24L_01180781.ConsoleManagement.Commands
             Args = args;
             ExecutionCounter = 0;
         }
-        public bool Execute()
+        public bool Execute(string line)
         {
-            var source = ConsoleDialog
-                .ReadWithPrompt("Please provide the path to the source file: ");
+            var match = Regex.Match(line, $@"^{ConsoleText}\s+(?<source>.*)$", RegexOptions.IgnoreCase);
+            if (!match.Success)
+                throw new InvalidOperationException();
+
+            var source = match.Groups["source"].Value.Trim();
 
             List<IAviationItem> entities;
             try
