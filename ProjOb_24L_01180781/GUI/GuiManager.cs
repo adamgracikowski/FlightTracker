@@ -1,6 +1,8 @@
 ﻿using FlightTrackerGUI;
 using ProjOb_24L_01180781.AviationItems;
+using ProjOb_24L_01180781.AviationItems.Interfaces;
 using ProjOb_24L_01180781.Database;
+using ProjOb_24L_01180781.DataSource.Tcp;
 using ProjOb_24L_01180781.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -67,7 +69,8 @@ namespace ProjOb_24L_01180781.GUI
         private GuiManager()
         {
             _timer = new(TimerCallback, TimeSpan.Zero, TimeSpan.FromSeconds(1));
-            AviationDatabase.FlightTable.ElementAdded += SyncFlightDetails;
+            AviationDatabase.Tables[TcpAcronyms.Flight].ElementAdded += SyncFlightDetails;
+            AviationDatabase.Tables[TcpAcronyms.Flight].ElementRemoved += SyncFlightDetails;
         }
         private void RunContinuation(Task task)
         {
@@ -108,22 +111,34 @@ namespace ProjOb_24L_01180781.GUI
 
             Runner.UpdateGUI(new FlightsGuiDataAdapter(active));
         }
-        private static void SyncFlightDetails(object? sender, ElementAddedEventArgs<Flight> args)
+        private static void SyncFlightDetails(object? sender, ElementAddedEventArgs<IAviationItem> args)
         {
-            _flightDetails.AddRange(args.AddedElements.Select(flight =>
+            lock (_flightDetailsLock)
             {
-                UInt64 id;
-                lock (flight.Lock)
-                    id = flight.Id;
-                var origin = AviationDatabase.AirportTable.Find(flight.OriginId);
-                var target = AviationDatabase.AirportTable.Find(flight.TargetId);
+                _flightDetails.AddRange(args.AddedElements.Select(item =>
+                {
+                    UInt64 id;
+                    lock (item.Lock)
+                        id = item.Id;
+                    var flight = (Flight)item;
+                    var origin = AviationDatabase.Tables[TcpAcronyms.Airport].Find(flight.OriginId);
+                    var target = AviationDatabase.Tables[TcpAcronyms.Airport].Find(flight.TargetId);
 
-                if (origin is null || target is null)
-                    throw new TcpFormatException($"Could not find the airport for flight with ID = {id}.");
+                    if (origin is null || target is null)
+                        throw new TcpFormatException($"Could not find the airport for flight with ID = {id}.");
 
-                return new FlightDetails(flight, origin, target);
+                    return new FlightDetails(flight, (Airport)origin, (Airport)target);
+                }
+                ));
             }
-            ));
+        }
+        private static void SyncFlightDetails(object? sender, ElementRemovedEventArgs<IAviationItem> args)
+        {
+            var ids = args.RemovedElements.Select(x => x.Id).ToHashSet();
+            lock (_flightDetailsLock)
+            {
+                _flightDetails = _flightDetails.Where(fd => !ids.Contains(fd.ID)).ToList();
+            }
         }
 
         private static List<FlightDetails> _flightDetails = [];
