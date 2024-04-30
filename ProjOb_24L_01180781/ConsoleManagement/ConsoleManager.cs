@@ -8,7 +8,7 @@ using ProjOb_24L_01180781.GUI;
 using ProjOb_24L_01180781.Media;
 using ProjOb_24L_01180781.Tools;
 using System.Globalization;
-
+using System.Text.RegularExpressions;
 using Nss = NetworkSourceSimulator;
 
 namespace ProjOb_24L_01180781.ConsoleManagement
@@ -48,6 +48,7 @@ namespace ProjOb_24L_01180781.ConsoleManagement
         public GuiManager GuiManager { get; init; } = GuiManager.GetInstance();
         public List<Task> PrintTasks { get; private set; } = [];
         public List<Task> ReportTasks { get; private set; } = [];
+        public List<Task> QueryTasks { get; private set; } = [];
         public List<IMedia> Media { get; private set; } = [];
         public Dictionary<string, IConsoleCommand> CommandDictionary { get; private set; } = [];
         public Dictionary<SourceMode, Action> SourceModeActions { get; private set; } = [];
@@ -56,7 +57,8 @@ namespace ProjOb_24L_01180781.ConsoleManagement
         private void RunFtr()
         {
             var parse = CommandDictionary[Parse.ConsoleText];
-            while (!parse.Execute())
+            var line = ConsoleDialog.ReadWithPrompt("Please provide the path to the source file: ");
+            while (!parse.Execute($"{Parse.ConsoleText} {line}"))
             {
                 SourceMode = new SourceModeDialog().PerformDialog();
                 if (SourceMode == SourceMode.None)
@@ -64,6 +66,7 @@ namespace ProjOb_24L_01180781.ConsoleManagement
                     RunNone();
                     return;
                 }
+                line = ConsoleDialog.ReadWithPrompt("Please provide the path to the source file: ");
             }
 
             FtreFile = ConsoleDialog
@@ -116,10 +119,17 @@ namespace ProjOb_24L_01180781.ConsoleManagement
 
             do
             {
-                var dialogResult = ConsoleDialog.ReadWithPrompt().ToLowerInvariant();
-                if (CommandDictionary.TryGetValue(dialogResult, out var command) && command is not null)
+                var dialogResult = ConsoleDialog.ReadWithPrompt();
+                var match = Regex.Match(dialogResult, @"\b(?<command>\w+)\b", RegexOptions.IgnoreCase);
+                if (!match.Success)
                 {
-                    command.Execute();
+                    Console.WriteLine("Invalid command.");
+                    DisplayAvailableCommads();
+                    continue;
+                }
+                if (CommandDictionary.TryGetValue(match.Groups["command"].Value, out var command) && command is not null)
+                {
+                    command.Execute(dialogResult);
                 }
                 else
                 {
@@ -150,13 +160,17 @@ namespace ProjOb_24L_01180781.ConsoleManagement
         }
         private void CreateConsoleCommands()
         {
-            CommandDictionary = new Dictionary<string, IConsoleCommand>()
+            CommandDictionary = new Dictionary<string, IConsoleCommand>(new KeyComparer())
             {
-                { Exit.ConsoleText,     new Exit(new ExitArgs(PrintTasks, ReportTasks, GuiManager)) },
+                { Exit.ConsoleText,     new Exit(new ExitArgs(PrintTasks, ReportTasks, QueryTasks, GuiManager)) },
                 { Print.ConsoleText,    new Print(new PrintArgs(PrintTasks, SnapshotsDirectory, TcpManager)) },
                 { Open.ConsoleText,     new Open(new OpenArgs(GuiManager)) },
                 { Report.ConsoleText,   new Report(new ReportArgs(ReportTasks, Media)) },
-                { Parse.ConsoleText,    new Parse(new ParseArgs(FtrManager, _separator)) }
+                { Parse.ConsoleText,    new Parse(new ParseArgs(FtrManager, _separator)) },
+                { Add.ConsoleText,      new Add(new AddArgs(QueryTasks)) },
+                { Display.ConsoleText,  new Display(new DisplayArgs(QueryTasks)) },
+                { Update.ConsoleText,   new Update(new UpdateArgs(QueryTasks)) },
+                { Delete.ConsoleText,   new Delete(new DeleteArgs(QueryTasks)) },
             };
         }
         private void DisplayAvailableCommads()
