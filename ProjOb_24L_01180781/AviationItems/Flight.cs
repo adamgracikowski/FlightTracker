@@ -1,4 +1,5 @@
 ﻿using ProjOb_24L_01180781.AviationItems.Interfaces;
+using ProjOb_24L_01180781.Database.SQL.Visitors;
 using ProjOb_24L_01180781.DataSource.Ftr;
 using ProjOb_24L_01180781.DataSource.Tcp;
 using System;
@@ -16,36 +17,38 @@ namespace ProjOb_24L_01180781.AviationItems
         public string TcpAcronym { get; } = TcpAcronyms.Flight;
 
         public UInt64 Id { get; set; }
-        public UInt64 OriginId { get; set; }
-        public UInt64 TargetId { get; set; }
-        public string TakeOffTime { get; private set; }
-        public string LandingTime { get; private set; }
-        public DateTime TakeOffDateTime { get; private set; }
-        public DateTime LandingDateTime { get; private set; }
-        public DateTime StartingDateTime { get; set; }
-        public Position Position { get; set; }
-        public Position StartingPosition { get; set; }
+        public DateTime TakeOffDateTime;
+        public DateTime LandingDateTime;
+        public UInt64 OriginId;
+        public UInt64 TargetId;
+        public string? TakeOffTime;
+        public string? LandingTime;
+        public DateTime? StartingDateTime;
+        public Position Position;
+        public Position StartingPosition
             = new(Position.Unknown, Position.Unknown, Position.Unknown);
-        public UInt64 PlaneId { get; set; }
+        public UInt64 PlaneId;
         public UInt64[] CrewIds { get; set; }
         public UInt64[] LoadIds { get; set; }
         public object Lock { get; private set; } = new();
 
-        public Flight(UInt64 id, UInt64 originId, UInt64 targetId, string takeOffTime, string landingTime,
-            Position position, UInt64 planeId, UInt64[] crewIds, UInt64[] loadIds,
-            DateTime takeOffDateTime, DateTime landingDateTime)
+        public Flight(UInt64 id, DateTime takeOffDateTime, DateTime landingDateTime,
+            UInt64[] crewIds, UInt64[] loadIds,
+            UInt64? originId = null, UInt64? targetId = null, UInt64? planeId = null,
+            string? takeOffTime = null, string? landingTime = null,
+            Position? position = null)
         {
             Id = id;
-            OriginId = originId;
-            TargetId = targetId;
-            TakeOffTime = takeOffTime;
-            LandingTime = landingTime;
-            Position = position;
-            PlaneId = planeId;
-            CrewIds = crewIds;
-            LoadIds = loadIds;
             TakeOffDateTime = takeOffDateTime;
             LandingDateTime = landingDateTime;
+            CrewIds = crewIds;
+            LoadIds = loadIds;
+            OriginId = originId ?? 0;
+            TargetId = targetId ?? 0;
+            PlaneId = planeId ?? 0;
+            TakeOffTime = takeOffTime;
+            LandingTime = landingTime;
+            Position = position ?? new();
         }
         public IAviationItem Copy()
         {
@@ -53,12 +56,11 @@ namespace ProjOb_24L_01180781.AviationItems
             Array.Copy(CrewIds, copyCrewIds, CrewIds.Length);
             UInt64[] copyLoadIds = new UInt64[LoadIds.Length];
             Array.Copy(LoadIds, copyLoadIds, LoadIds.Length);
-            return new Flight(Id, OriginId, TargetId,
-                TakeOffTime, LandingTime, Position.Copy(),
-                PlaneId, copyCrewIds, copyLoadIds,
-                TakeOffDateTime, LandingDateTime);
+
+            return new Flight(Id, TakeOffDateTime, LandingDateTime, copyCrewIds, copyLoadIds,
+                OriginId, TargetId, PlaneId, TakeOffTime, LandingTime, Position.Copy());
         }
-        public void UpdatePosition(Single longitude, Single latitude, Single? amsl = null)
+        public void UpdatePosition(double? longitude = null, double? latitude = null, double? amsl = null)
         {
             Position.Update(longitude, latitude, amsl);
             StartingPosition.Update(longitude, latitude, amsl);
@@ -67,6 +69,10 @@ namespace ProjOb_24L_01180781.AviationItems
         public Position GetPosition()
         {
             return Position.Copy();
+        }
+        public void AcceptQueryVisitor(QueryVisitor visitor)
+        {
+            visitor.RunQuery(this);
         }
     }
 }

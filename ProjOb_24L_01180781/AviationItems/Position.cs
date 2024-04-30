@@ -8,33 +8,34 @@ namespace ProjOb_24L_01180781.AviationItems
 {
     public class Position
     {
-        public static readonly Single Unknown = 0;
-        public Single Longitude { get; set; }
-        public Single Latitude { get; set; }
-        public Single Amsl { get; set; }
-        public Position(Single longitude, Single latitude, Single amsl)
+        public static readonly double Unknown = 0;
+        public double Longitude;
+        public double Latitude;
+        public double Amsl;
+        public Position(double? longitude = null, double? latitude = null, double? amsl = null)
         {
             Update(longitude, latitude, amsl);
+        }
+        public Position()
+        {
+            Update(Unknown, Unknown, Unknown);
         }
         public Position Copy()
         {
             return new Position(Longitude, Latitude, Amsl);
         }
-        public void Update(Single longitude, Single latitude, Single? amsl = null)
+        public void Update(double? longitude = null, double? latitude = null, double? amsl = null)
         {
-            if (!IsValidLongitude(longitude) || !IsValidLatitude(latitude))
-                throw new InvalidOperationException();
-
-            Longitude = longitude;
-            Latitude = latitude;
+            Longitude = longitude ?? Longitude;
+            Latitude = latitude ?? Latitude;
             Amsl = amsl ?? Amsl;
         }
 
-        private static bool IsValidLongitude(double longitude)
+        public static bool IsValidLongitude(double longitude)
         {
             return _minLongitude <= longitude && longitude <= _maxLongitude;
         }
-        private static bool IsValidLatitude(double latitude)
+        public static bool IsValidLatitude(double latitude)
         {
             return _minLatitude <= latitude && latitude <= _maxLatitude;
         }

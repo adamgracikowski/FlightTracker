@@ -1,4 +1,5 @@
 ﻿using ProjOb_24L_01180781.AviationItems.Interfaces;
+using ProjOb_24L_01180781.Database.SQL.Visitors;
 using ProjOb_24L_01180781.DataSource.Ftr;
 using ProjOb_24L_01180781.DataSource.Tcp;
 using System;
@@ -16,21 +17,25 @@ namespace ProjOb_24L_01180781.AviationItems
         public string TcpAcronym { get; } = TcpAcronyms.Cargo;
 
         public UInt64 Id { get; set; }
-        public Single Weight { get; private set; }
-        public string Code { get; private set; }
-        public string Description { get; private set; }
+        public Single Weight;
+        public string? Code;
+        public string? Description;
         public object Lock { get; private set; } = new();
 
-        public Cargo(UInt64 id, Single weight, string code, string description)
+        public Cargo(UInt64 id, Single? weight = null, string? code = null, string? description = null)
         {
             Id = id;
-            Weight = weight;
+            Weight = weight ?? 0;
             Code = code;
             Description = description;
         }
         public IAviationItem Copy()
         {
             return new Cargo(Id, Weight, Code, Description);
+        }
+        public void AcceptQueryVisitor(QueryVisitor visitor)
+        {
+            visitor.RunQuery(this);
         }
     }
 }

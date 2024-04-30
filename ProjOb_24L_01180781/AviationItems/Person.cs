@@ -1,50 +1,45 @@
 ﻿using ProjOb_24L_01180781.AviationItems.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace ProjOb_24L_01180781.AviationItems
 {
     public abstract class Person : IContactable
     {
         public UInt64 Id { get; set; }
-        public string Name { get; private set; }
-        public UInt64 Age { get; private set; }
-        public string Phone
+        public string? Name;
+        public UInt64 Age;
+        public string? Phone
         {
-            get => _phone;
-            set
-            {
-                if (Regex.IsMatch(value, _phonePattern))
-                    _phone = value;
-                else throw new InvalidOperationException("invalid phone number");
-            }
+            get { return PhoneNumber; }
+            set { PhoneNumber = value; }
         }
-        public string Email
+        public string? Email
         {
-            get => _email;
-            set
-            {
-                if (Regex.IsMatch(value, _emailPattern))
-                    _email = value;
-                else throw new InvalidOperationException("invalid email address");
-            }
+            get { return EmailAddress; }
+            set { EmailAddress = value; }
         }
 
-        public Person(UInt64 id, string name, UInt64 age, string phone, string email)
+        public string? PhoneNumber;
+        public string? EmailAddress;
+
+        public Person(UInt64 id, string? name = null, UInt64? age = null, string? phone = null, string? email = null)
         {
             Id = id;
             Name = name;
-            Age = age;
+            Age = age ?? 0;
             Phone = phone;
             Email = email;
         }
 
-        private string _phone = string.Empty;
-        private string _email = string.Empty;
+        public static bool IsValidPhone(string phone)
+        {
+            return Regex.IsMatch(phone, _phonePattern);
+        }
+        public static bool IsValidEmail(string email)
+        {
+            return Regex.IsMatch(email, _emailPattern);
+        }
+
         private static readonly string _phonePattern = @"^\d{3}-\d{3}-\d{4}$";
         private static readonly string _emailPattern = @"^([\w\.\-]+)@([\w\-]+)((\.\w+)+)$";
     }

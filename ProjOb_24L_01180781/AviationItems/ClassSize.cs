@@ -1,21 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ProjOb_24L_01180781.AviationItems
 {
-    public struct ClassSize
+    public class ClassSize
     {
-        public UInt16 First { get; set; }
-        public UInt16 Business { get; set; }
-        public UInt16 Economy { get; set; }
-        public ClassSize(UInt16 first, UInt16 business, UInt16 economy)
+        public static readonly UInt16 Unknown = 0;
+        public UInt16 First;
+        public UInt16 Business;
+        public UInt16 Economy;
+        public ClassSize(UInt16? first, UInt16? business, UInt16? economy)
         {
-            First = first;
-            Business = business;
-            Economy = economy;
+            First = first ?? Unknown;
+            Business = business ?? Unknown;
+            Economy = economy ?? Unknown;
+        }
+        public ClassSize()
+            : this(Unknown, Unknown, Unknown)
+        { }
+
+        public ClassSize Copy()
+        {
+            return new ClassSize(First, Business, Economy);
         }
     }
 }

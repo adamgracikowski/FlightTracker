@@ -1,4 +1,5 @@
 ﻿using ProjOb_24L_01180781.AviationItems.Interfaces;
+using ProjOb_24L_01180781.Database.SQL.Visitors;
 using ProjOb_24L_01180781.DataSource.Ftr;
 using ProjOb_24L_01180781.DataSource.Tcp;
 using ProjOb_24L_01180781.Media;
@@ -16,13 +17,13 @@ namespace ProjOb_24L_01180781.AviationItems
         public string FtrAcronym { get; } = FtrAcronyms.PassengerPlane;
         public string TcpAcronym { get; } = TcpAcronyms.PassengerPlane;
 
-        public ClassSize ClassSize { get; private set; }
+        public ClassSize ClassSize;
         public object Lock { get; private set; } = new();
 
-        public PassengerPlane(UInt64 id, string serial, string country, string model, ClassSize classSize)
+        public PassengerPlane(UInt64 id, string? serial = null, string? country = null, string? model = null, ClassSize? classSize = null)
             : base(id, serial, country, model)
         {
-            ClassSize = classSize;
+            ClassSize = classSize ?? new ClassSize();
         }
         public string AcceptMediaReport(IMedia media)
         {
@@ -30,7 +31,11 @@ namespace ProjOb_24L_01180781.AviationItems
         }
         public IAviationItem Copy()
         {
-            return new PassengerPlane(Id, Serial, Country, Model, ClassSize);
+            return new PassengerPlane(Id, Serial, Country, Model, ClassSize.Copy());
+        }
+        public void AcceptQueryVisitor(QueryVisitor visitor)
+        {
+            visitor.RunQuery(this);
         }
     }
 }

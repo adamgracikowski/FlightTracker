@@ -1,4 +1,5 @@
 ﻿using ProjOb_24L_01180781.AviationItems.Interfaces;
+using ProjOb_24L_01180781.Database.SQL.Visitors;
 using ProjOb_24L_01180781.DataSource.Ftr;
 using ProjOb_24L_01180781.DataSource.Tcp;
 using ProjOb_24L_01180781.Media;
@@ -16,13 +17,13 @@ namespace ProjOb_24L_01180781.AviationItems
         public string FtrAcronym { get; } = FtrAcronyms.CargoPlane;
         public string TcpAcronym { get; } = TcpAcronyms.CargoPlane;
 
-        public Single MaxLoad { get; private set; }
+        public Single MaxLoad;
         public object Lock { get; private set; } = new();
 
-        public CargoPlane(UInt64 id, string serial, string country, string model, Single maxLoad)
+        public CargoPlane(UInt64 id, string? serial = null, string? country = null, string? model = null, Single? maxLoad = null)
             : base(id, serial, country, model)
         {
-            MaxLoad = maxLoad;
+            MaxLoad = maxLoad ?? 0;
         }
         public string AcceptMediaReport(IMedia media)
         {
@@ -31,6 +32,10 @@ namespace ProjOb_24L_01180781.AviationItems
         public IAviationItem Copy()
         {
             return new CargoPlane(Id, Serial, Country, Model, MaxLoad);
+        }
+        public void AcceptQueryVisitor(QueryVisitor visitor)
+        {
+            visitor.RunQuery(this);
         }
     }
 }
