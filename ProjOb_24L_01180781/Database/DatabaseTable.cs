@@ -1,4 +1,5 @@
 ﻿using ProjOb_24L_01180781.AviationItems.Interfaces;
+using ProjOb_24L_01180781.Tools;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -8,15 +9,16 @@ using System.Threading.Tasks;
 
 namespace ProjOb_24L_01180781.Database
 {
-    public class DatabaseTable5<T>
+    public class DatabaseTable<T>
         where T : class?, IAviationItem
     {
         public event EventHandler<ElementAddedEventArgs<T>>? ElementAdded;
+        public event EventHandler<ElementRemovedEventArgs<T>>? ElementRemoved;
         public string Acronym { get; private set; }
         public string Name { get; private set; }
         public ConcurrentDictionary<UInt64, T> Items { get; private set; } = [];
 
-        public DatabaseTable5(string acronym, string name)
+        public DatabaseTable(string acronym, string name)
         {
             Acronym = acronym;
             Name = name;
@@ -29,7 +31,7 @@ namespace ProjOb_24L_01180781.Database
                 if (!Items.TryAdd(entity.Id, entity))
                 {
                     lock (entity.Lock)
-                        Console.WriteLine($"Table {Name}: Item with duplicated ID ({entity.Id}) discarded.");
+                        Console.WriteLine($"{Name}: Element with ID = {entity.Id} already exists.");
                 }
                 else added.Add(entity);
             }
@@ -40,15 +42,16 @@ namespace ProjOb_24L_01180781.Database
         {
             AddRange(entities.Where(item => item.TcpAcronym == Acronym).Cast<T>());
         }
-        public T? Find(UInt64 id)
+        public T? Find(UInt64? id)
         {
-            if (Items.TryGetValue(id, out var item) && item is not null)
+            if (id is null) return null;
+            if (Items.TryGetValue(id.Value, out var item) && item is not null)
             {
                 return item;
             }
             else
             {
-                Console.WriteLine($"Table {Name}: Item with ID = {id} not found.");
+                Console.WriteLine($"{Name}: Element with ID = {id} not found.");
                 return null;
             }
         }
@@ -60,9 +63,21 @@ namespace ProjOb_24L_01180781.Database
                     return item.Value.Copy();
             }));
         }
+        public long RemoveWhere(Predicate<KeyValuePair<UInt64, T>> predicate)
+        {
+            var (yes, no) = Items.PartitionBy(kvp => { lock (kvp.Value.Lock) return predicate(kvp); });
+            Items = new(no);
+            if (yes.Count != 0) OnElementRemoved(yes.Select(kvp => kvp.Value));
+            return yes.Count;
+        }
+
         protected virtual void OnElementAdded(IEnumerable<T> addedElements)
         {
             ElementAdded?.Invoke(this, new ElementAddedEventArgs<T>(addedElements));
+        }
+        protected virtual void OnElementRemoved(IEnumerable<T> addedElements)
+        {
+            ElementRemoved?.Invoke(this, new ElementRemovedEventArgs<T>(addedElements));
         }
     }
 }

@@ -1,49 +1,43 @@
 ﻿using ProjOb_24L_01180781.AviationItems;
 using ProjOb_24L_01180781.AviationItems.Interfaces;
 using ProjOb_24L_01180781.DataSource.Tcp;
-using ProjOb_24L_01180781.Exceptions;
-using ProjOb_24L_01180781.GUI;
-using System;
+using ProjOb_24L_01180781.Tools;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ProjOb_24L_01180781.Database
 {
     public static class AviationDatabase
     {
         public static ConcurrentDictionary<UInt64, IAviationItem> AllItems { get; private set; } = [];
-        public static DatabaseTable5<Airport> AirportTable { get; private set; }
-            = new(TcpAcronyms.Airport, "Airport");
-        public static DatabaseTable5<Cargo> CargoTable { get; private set; }
-            = new(TcpAcronyms.Cargo, "Cargo");
-        public static DatabaseTable5<CargoPlane> CargoPlaneTable { get; private set; }
-            = new(TcpAcronyms.CargoPlane, "CargoPlane");
-        public static DatabaseTable5<Crew> CrewTable { get; private set; }
-            = new(TcpAcronyms.Crew, "Crew");
-        public static DatabaseTable5<Flight> FlightTable { get; private set; }
-            = new(TcpAcronyms.Flight, "Flight");
-        public static DatabaseTable5<Passenger> PassengerTable { get; private set; }
-            = new(TcpAcronyms.Passenger, "Passenger");
-        public static DatabaseTable5<PassengerPlane> PassengerPlaneTable { get; private set; }
-            = new(TcpAcronyms.PassengerPlane, "PassengerPlane");
+        public static ConcurrentDictionary<string, DatabaseTable<IAviationItem>> Tables { get; private set; } = [];
+        public static Dictionary<string, string> TableNames { get; private set; } = new(new KeyComparer());
+        static AviationDatabase()
+        {
+            BuildTables();
+            SubscribeToOnRemoved();
+        }
 
         public static void Synchronize()
         {
             lock (_cacheLock)
             {
+                var added = new List<IAviationItem>();
                 foreach (var entity in _cache)
-                    AllItems.TryAdd(entity.Id, entity);
+                {
+                    if (!AllItems.TryAdd(entity.Id, entity))
+                    {
+                        Console.WriteLine($"Database: Element with ID = {entity.Id} already exists.");
+                    }
+                    else added.Add(entity);
+                }
 
-                AirportTable.AddRange(_cache);
-                CargoTable.AddRange(_cache);
-                CargoPlaneTable.AddRange(_cache);
-                CrewTable.AddRange(_cache);
-                FlightTable.AddRange(_cache);
-                PassengerTable.AddRange(_cache);
-                PassengerPlaneTable.AddRange(_cache);
+                Tables[TcpAcronyms.Airport].AddRange(added);
+                Tables[TcpAcronyms.Cargo].AddRange(added);
+                Tables[TcpAcronyms.CargoPlane].AddRange(added);
+                Tables[TcpAcronyms.Crew].AddRange(added);
+                Tables[TcpAcronyms.Flight].AddRange(added);
+                Tables[TcpAcronyms.Passenger].AddRange(added);
+                Tables[TcpAcronyms.PassengerPlane].AddRange(added);
 
                 _cache.Clear();
             }
@@ -56,6 +50,7 @@ namespace ProjOb_24L_01180781.Database
         public static void AddRange(IEnumerable<IAviationItem> items)
         {
             lock (_cacheLock)
+
                 _cache.AddRange(items);
         }
         public static List<IAviationItem> CopyState()
@@ -69,18 +64,111 @@ namespace ProjOb_24L_01180781.Database
         public static List<IAviationItem> CopyReportable()
         {
             var reportable = new List<IAviationItem>();
-            AirportTable.CopyTo(reportable);
-            CargoPlaneTable.CopyTo(reportable);
-            PassengerPlaneTable.CopyTo(reportable);
+            Tables[TcpAcronyms.Airport].CopyTo(reportable);
+            Tables[TcpAcronyms.CargoPlane].CopyTo(reportable);
+            Tables[TcpAcronyms.PassengerPlane].CopyTo(reportable);
             return reportable;
         }
-        public static IAviationItem? Find(UInt64 id)
+        public static IAviationItem? Find(UInt64? id)
         {
-            if (AllItems.TryGetValue(id, out var item) && item is not null)
+            if (id is null) return null;
+            if (AllItems.TryGetValue(id.Value, out var item) && item is not null)
             {
                 return item;
             }
             else return null;
+        }
+
+        private static void BuildTables()
+        {
+            Tables.TryAdd(TcpAcronyms.Airport, new(TcpAcronyms.Airport, AviationName.Airport));
+            Tables.TryAdd(TcpAcronyms.Cargo, new(TcpAcronyms.Cargo, AviationName.Cargo));
+            Tables.TryAdd(TcpAcronyms.CargoPlane, new(TcpAcronyms.CargoPlane, AviationName.CargoPlane));
+            Tables.TryAdd(TcpAcronyms.Crew, new(TcpAcronyms.Crew, AviationName.Crew));
+            Tables.TryAdd(TcpAcronyms.Flight, new(TcpAcronyms.Flight, AviationName.Flight));
+            Tables.TryAdd(TcpAcronyms.Passenger, new(TcpAcronyms.Passenger, AviationName.Passenger));
+            Tables.TryAdd(TcpAcronyms.PassengerPlane, new(TcpAcronyms.PassengerPlane, AviationName.PassengerPlane));
+
+            TableNames = new(new KeyComparer())
+            {
+                { AviationName.Airport,        TcpAcronyms.Airport },
+                { AviationName.Cargo,          TcpAcronyms.Cargo },
+                { AviationName.CargoPlane,     TcpAcronyms.CargoPlane },
+                { AviationName.Crew,           TcpAcronyms.Crew },
+                { AviationName.Flight,         TcpAcronyms.Flight },
+                { AviationName.Passenger,      TcpAcronyms.Passenger },
+                { AviationName.PassengerPlane, TcpAcronyms.PassengerPlane }
+            };
+        }
+
+        private static void SubscribeToOnRemoved()
+        {
+            // Flight:
+            Tables[TcpAcronyms.Flight].ElementRemoved +=
+                (sender, args) =>
+                {
+                    RemoveFromAllItems(args);
+                };
+
+            // Airport:
+            Tables[TcpAcronyms.Airport].ElementRemoved +=
+                (sender, args) =>
+                {
+                    var ids = RemoveFromAllItems(args);
+                    Tables[TcpAcronyms.Flight].RemoveWhere(kvp =>
+                    {
+                        var flight = (Flight)kvp.Value;
+                        return ids.Contains(flight.OriginId) || ids.Contains(flight.TargetId);
+                    });
+                };
+
+            // Crew:
+            Tables[TcpAcronyms.Crew].ElementRemoved +=
+                (sender, args) =>
+                {
+                    var ids = RemoveFromAllItems(args);
+                    foreach (var flight in Tables[TcpAcronyms.Flight].Items.Values.Cast<Flight>())
+                    {
+                        lock (flight.Lock)
+                            flight.CrewIds = flight.CrewIds.Except(ids).ToArray();
+                    }
+                };
+
+            // Cargo & Passenger:
+            EventHandler<ElementRemovedEventArgs<IAviationItem>>? removeFromLoadIds =
+                (sender, args) =>
+                {
+                    var ids = RemoveFromAllItems(args);
+                    foreach (var flight in Tables[TcpAcronyms.Flight].Items.Values.Cast<Flight>())
+                    {
+                        lock (flight.Lock)
+                            flight.LoadIds = flight.LoadIds.Except(ids).ToArray();
+                    }
+                };
+
+            Tables[TcpAcronyms.Cargo].ElementRemoved += removeFromLoadIds;
+            Tables[TcpAcronyms.Passenger].ElementRemoved += removeFromLoadIds;
+
+            // PassengerPlane & CargoPlane:
+            EventHandler<ElementRemovedEventArgs<IAviationItem>>? removeBasedOnPlaneId =
+                (sender, args) =>
+                {
+                    var ids = RemoveFromAllItems(args);
+                    Tables[TcpAcronyms.Flight].RemoveWhere(kvp =>
+                    {
+                        var flight = (Flight)kvp.Value;
+                        return ids.Contains(flight.PlaneId);
+                    });
+                };
+            Tables[TcpAcronyms.PassengerPlane].ElementRemoved += removeBasedOnPlaneId;
+            Tables[TcpAcronyms.CargoPlane].ElementRemoved += removeBasedOnPlaneId;
+        }
+        private static HashSet<UInt64> RemoveFromAllItems(ElementRemovedEventArgs<IAviationItem> args)
+        {
+            var ids = args.RemovedElements.Select(x => { lock (x.Lock) return x.Id; }).ToHashSet();
+            foreach (var id in ids)
+                AllItems.Remove(id, out _);
+            return ids;
         }
 
         private static List<IAviationItem> _cache { get; set; } = [];
