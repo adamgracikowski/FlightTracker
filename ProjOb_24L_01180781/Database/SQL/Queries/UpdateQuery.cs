@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Mapsui.Widgets;
-using ProjOb_24L_01180781.Database.SQL.WhereClause;
+﻿using ProjOb_24L_01180781.Database.SQL.WhereClause;
 
 namespace ProjOb_24L_01180781.Database.SQL.Queries
 {

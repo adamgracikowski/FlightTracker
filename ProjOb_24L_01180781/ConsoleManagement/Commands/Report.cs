@@ -1,10 +1,5 @@
 ﻿using ProjOb_24L_01180781.Database;
 using ProjOb_24L_01180781.Media;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ProjOb_24L_01180781.ConsoleManagement.Commands
 {

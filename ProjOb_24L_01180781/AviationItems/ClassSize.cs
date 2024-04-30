@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ProjOb_24L_01180781.AviationItems
+﻿namespace ProjOb_24L_01180781.AviationItems
 {
     public class ClassSize
     {

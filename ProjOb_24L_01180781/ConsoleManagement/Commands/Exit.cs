@@ -1,7 +1,5 @@
 ﻿using ProjOb_24L_01180781.DataSource.Ftre;
 using ProjOb_24L_01180781.GUI;
-using ProjOb_24L_01180781.Tools;
-using Splat;
 
 namespace ProjOb_24L_01180781.ConsoleManagement.Commands
 {

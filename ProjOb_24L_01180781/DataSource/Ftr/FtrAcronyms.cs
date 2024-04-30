@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ProjOb_24L_01180781.DataSource.Ftr
+﻿namespace ProjOb_24L_01180781.DataSource.Ftr
 {
     /// <summary>
     /// Represents a set of acronyms specific for .ftr data source.

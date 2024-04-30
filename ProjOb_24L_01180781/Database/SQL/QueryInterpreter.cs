@@ -1,7 +1,5 @@
-﻿using Newtonsoft.Json.Serialization;
-using ProjOb_24L_01180781.AviationItems;
+﻿using ProjOb_24L_01180781.AviationItems;
 using ProjOb_24L_01180781.AviationItems.Interfaces;
-using ProjOb_24L_01180781.Database.SQL.Queries;
 using ProjOb_24L_01180781.Database.SQL.Visitors;
 using ProjOb_24L_01180781.Database.SQL.WhereClause;
 using ProjOb_24L_01180781.DataSource.Tcp;
