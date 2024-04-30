@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ProjOb_24L_01180781.AviationItems.Interfaces
+﻿namespace ProjOb_24L_01180781.AviationItems.Interfaces
 {
     public interface IHasId
     {
-        ulong Id { get; set; }
-        void UpdateId(ulong id)
+        UInt64 Id { get; set; }
+        void UpdateId(UInt64 id)
         {
             Id = id;
         }
