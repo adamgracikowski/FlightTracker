@@ -243,9 +243,8 @@ namespace ProjOb_24L_01180781.DataSource.Tcp
             var position = new Position(latitude: Position.Unknown,
                                         longitude: Position.Unknown,
                                         amsl: Position.Unknown);
-
-            return new Flight(id, originId, targetId, takeOffTime, landingTime,
-                              position, planeId, crewIds, loadIds, takeOffDateTime, landingDateTime);
+            return new Flight(id, takeOffDateTime, landingDateTime, crewIds, loadIds,
+                originId, targetId, planeId, takeOffTime, landingTime, position);
         }
     }
 }

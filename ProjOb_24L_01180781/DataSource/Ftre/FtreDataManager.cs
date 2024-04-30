@@ -1,9 +1,12 @@
 ﻿#define DEBUGLOG
 
+using DynamicData;
 using NetworkSourceSimulator;
+using ProjOb_24L_01180781.AviationItems;
 using ProjOb_24L_01180781.AviationItems.Interfaces;
 using ProjOb_24L_01180781.Database;
 using ProjOb_24L_01180781.DataSource.Ftr;
+using ProjOb_24L_01180781.DataSource.Tcp;
 using Nss = NetworkSourceSimulator;
 
 namespace ProjOb_24L_01180781.DataSource.Ftre
@@ -53,9 +56,9 @@ namespace ProjOb_24L_01180781.DataSource.Ftre
                 var positionable = (IPositionable)item;
                 lock (item.Lock)
                 {
-                    try
+                    var oldPosition = positionable.GetPosition();
+                    if (Position.IsValidLatitude(args.Latitude) && Position.IsValidLongitude(args.Longitude))
                     {
-                        var oldPosition = positionable.GetPosition();
                         positionable.UpdatePosition(args.Longitude, args.Latitude, args.AMSL);
 
                         log = $"{UpdateStatus.Success} | {args.ObjectID}; " +
@@ -63,7 +66,7 @@ namespace ProjOb_24L_01180781.DataSource.Ftre
                             $"{oldPosition.Latitude} --> {args.Latitude}; " +
                             $"{oldPosition.Amsl} --> {args.AMSL}";
                     }
-                    catch (InvalidOperationException)
+                    else
                     {
                         log = $"{UpdateStatus.Failure} | {args.ObjectID}; " +
                             $"{args.Longitude}; {args.Latitude}; {args.AMSL}";
@@ -86,17 +89,17 @@ namespace ProjOb_24L_01180781.DataSource.Ftre
                 var contactable = (IContactable)item;
                 lock (item.Lock)
                 {
-                    try
+                    var oldPhone = contactable.Phone;
+                    var oldEmail = contactable.Email;
+                    if (Person.IsValidEmail(args.EmailAddress) && Person.IsValidPhone(args.PhoneNumber))
                     {
-                        var oldPhone = contactable.Phone;
-                        var oldEmail = contactable.Email;
                         contactable.Phone = args.PhoneNumber;
                         contactable.Email = args.EmailAddress;
                         log = $"{UpdateStatus.Success} | {args.ObjectID}; " +
                             $"{oldPhone} --> {args.PhoneNumber}; " +
                             $"{oldEmail} --> {args.EmailAddress}";
                     }
-                    catch (InvalidOperationException)
+                    else
                     {
                         log = $"{UpdateStatus.Failure} | {args.ObjectID}; " +
                             $"{args.PhoneNumber}; {args.EmailAddress}";
@@ -113,7 +116,7 @@ namespace ProjOb_24L_01180781.DataSource.Ftre
             if (!UpdateId(oldId, newId, item, FtrAcronyms.Airport))
                 return false;
 
-            foreach (var flight in AviationDatabase.FlightTable.Items.Values)
+            foreach (var flight in AviationDatabase.Tables[TcpAcronyms.Flight].Items.Values.Cast<Flight>())
             {
                 lock (flight.Lock)
                 {
@@ -124,7 +127,7 @@ namespace ProjOb_24L_01180781.DataSource.Ftre
                 }
             }
 
-            return RemoveAndAdd(oldId, AviationDatabase.AirportTable);
+            return RemoveAndAdd(oldId, AviationDatabase.Tables[TcpAcronyms.Airport]);
         }
         private static bool UpdateLoadId(IDUpdateArgs args, IAviationItem item)
         {
@@ -132,19 +135,15 @@ namespace ProjOb_24L_01180781.DataSource.Ftre
             if (!UpdateId(oldId, newId, item, FtrAcronyms.Cargo, FtrAcronyms.Passenger))
                 return false;
 
-            foreach (var flight in AviationDatabase.FlightTable.Items.Values)
+            foreach (var flight in AviationDatabase.Tables[TcpAcronyms.Flight].Items.Values.Cast<Flight>())
             {
                 lock (flight.Lock)
-                {
-                    int index = Array.IndexOf(flight.LoadIds, oldId);
-                    if (index >= 0)
-                        flight.LoadIds[index] = newId;
-                }
+                    flight.LoadIds = Array.ConvertAll(flight.LoadIds, id => id == oldId ? newId : id);
             }
 
             if (item.FtrAcronym == FtrAcronyms.Cargo)
-                return RemoveAndAdd(oldId, AviationDatabase.CargoTable);
-            return RemoveAndAdd(oldId, AviationDatabase.PassengerTable);
+                return RemoveAndAdd(oldId, AviationDatabase.Tables[TcpAcronyms.Cargo]);
+            return RemoveAndAdd(oldId, AviationDatabase.Tables[TcpAcronyms.Passenger]);
         }
         private static bool UpdatePlaneId(IDUpdateArgs args, IAviationItem item)
         {
@@ -152,7 +151,7 @@ namespace ProjOb_24L_01180781.DataSource.Ftre
             if (!UpdateId(oldId, newId, item, FtrAcronyms.CargoPlane, FtrAcronyms.PassengerPlane))
                 return false;
 
-            foreach (var flight in AviationDatabase.FlightTable.Items.Values)
+            foreach (var flight in AviationDatabase.Tables[TcpAcronyms.Flight].Items.Values.Cast<Flight>())
             {
                 lock (flight.Lock)
                 {
@@ -162,8 +161,8 @@ namespace ProjOb_24L_01180781.DataSource.Ftre
             }
 
             if (item.FtrAcronym == FtrAcronyms.CargoPlane)
-                return RemoveAndAdd(oldId, AviationDatabase.CargoPlaneTable);
-            return RemoveAndAdd(oldId, AviationDatabase.PassengerPlaneTable);
+                return RemoveAndAdd(oldId, AviationDatabase.Tables[TcpAcronyms.CargoPlane]);
+            return RemoveAndAdd(oldId, AviationDatabase.Tables[TcpAcronyms.PassengerPlane]);
         }
         private static bool UpdateCrewId(IDUpdateArgs args, IAviationItem item)
         {
@@ -171,22 +170,18 @@ namespace ProjOb_24L_01180781.DataSource.Ftre
             if (!UpdateId(oldId, newId, item, FtrAcronyms.Crew))
                 return false;
 
-            foreach (var flight in AviationDatabase.FlightTable.Items.Values)
+            foreach (var flight in AviationDatabase.Tables[TcpAcronyms.Flight].Items.Values.Cast<Flight>())
             {
                 lock (flight.Lock)
-                {
-                    int index = Array.IndexOf(flight.CrewIds, oldId);
-                    if (index >= 0)
-                        flight.LoadIds[index] = newId;
-                }
+                    flight.CrewIds = Array.ConvertAll(flight.CrewIds, id => id == oldId ? newId : id);
             }
-            return RemoveAndAdd(oldId, AviationDatabase.CrewTable);
+            return RemoveAndAdd(oldId, AviationDatabase.Tables[TcpAcronyms.Crew]);
         }
         private static bool UpdateFlightId(IDUpdateArgs args, IAviationItem item)
         {
             if (!UpdateId(args.ObjectID, args.NewObjectID, item, FtrAcronyms.Flight))
                 return false;
-            return RemoveAndAdd(args.ObjectID, AviationDatabase.FlightTable);
+            return RemoveAndAdd(args.ObjectID, AviationDatabase.Tables[TcpAcronyms.Flight]);
         }
         private static bool UpdateId(UInt64 oldId, UInt64 newId, IAviationItem item, params string[] ftrAcronym)
         {
@@ -198,7 +193,7 @@ namespace ProjOb_24L_01180781.DataSource.Ftre
             }
             return true;
         }
-        private static bool RemoveAndAdd<T>(UInt64 id, DatabaseTable5<T> table)
+        private static bool RemoveAndAdd<T>(UInt64 id, DatabaseTable<T> table)
             where T : class?, IAviationItem
         {
             if (!table.Items.Remove(id, out var item) || item is null)
