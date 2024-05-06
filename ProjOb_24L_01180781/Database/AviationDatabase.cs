@@ -14,6 +14,7 @@ namespace ProjOb_24L_01180781.Database
         static AviationDatabase()
         {
             BuildTables();
+            BuildTableNames();
             SubscribeToOnRemoved();
         }
 
@@ -88,7 +89,9 @@ namespace ProjOb_24L_01180781.Database
             Tables.TryAdd(TcpAcronyms.Flight, new(TcpAcronyms.Flight, AviationName.Flight));
             Tables.TryAdd(TcpAcronyms.Passenger, new(TcpAcronyms.Passenger, AviationName.Passenger));
             Tables.TryAdd(TcpAcronyms.PassengerPlane, new(TcpAcronyms.PassengerPlane, AviationName.PassengerPlane));
-
+        }
+        private static void BuildTableNames()
+        {
             TableNames = new(new KeyComparer())
             {
                 { AviationName.Airport,        TcpAcronyms.Airport },

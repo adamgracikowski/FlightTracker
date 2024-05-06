@@ -13,11 +13,6 @@
             if (!match.Success)
                 return null;
 
-            var command = match.Groups[1].Value;
-
-            if (string.Compare(command, Delete.ConsoleText, StringComparison.InvariantCultureIgnoreCase) != 0)
-                throw new InvalidDataException();
-
             var tableName = match.Groups[2].Value;
             var hasWhereClause = match.Groups[3].Success;
             var conditions = match.Groups[4].Value;
@@ -40,11 +35,6 @@
             var match = Regex.Match(query, QueryRegex.DisplayBase, RegexOptions.IgnoreCase);
             if (!match.Success)
                 return null;
-
-            var command = match.Groups[1].Value;
-
-            if (string.Compare(command, Display.ConsoleText, StringComparison.InvariantCultureIgnoreCase) != 0)
-                throw new InvalidDataException();
 
             var tableName = match.Groups[4].Value;
             var columns = match.Groups[2].Value;
@@ -74,11 +64,6 @@
             if (!match.Success)
                 return null;
 
-            var command = match.Groups[1].Value;
-
-            if (string.Compare(command, Add.ConsoleText, StringComparison.InvariantCultureIgnoreCase) != 0)
-                throw new InvalidDataException();
-
             var tableName = match.Groups[2].Value;
             var assignments = match.Groups[4].Value;
 
@@ -92,11 +77,6 @@
             var match = Regex.Match(query, QueryRegex.UpdateBase, RegexOptions.IgnoreCase);
             if (!match.Success)
                 return null;
-
-            var command = match.Groups[1].Value;
-
-            if (string.Compare(command, Update.ConsoleText, StringComparison.InvariantCultureIgnoreCase) != 0)
-                throw new InvalidDataException();
 
             var tableName = match.Groups[2].Value;
             var assignments = match.Groups[4].Value;

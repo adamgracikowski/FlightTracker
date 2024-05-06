@@ -41,44 +41,13 @@ namespace ProjOb_24L_01180781.ConsoleManagement.Commands
             }
             else
             {
-                WaitForPrintTasks();
-                WaitForReportTasks();
+                WaitTasks("Waiting for all the snapshots to finish...", Args.PrintTasks);
+                WaitTasks("Waiting for all the reports to finish...", Args.ReportTasks);
+                WaitTasks("Waiting for all the queries to finish...", Args.QueryTasks);
                 WaitForLogTasks();
-                WaitForQueryTasks();
 
                 ExecutionCounter++;
                 return true;
-            }
-        }
-
-        private void WaitForPrintTasks()
-        {
-            Console.WriteLine("Waiting for all the snapshots to finish...");
-            try
-            {
-                Task.WaitAll([.. Args.PrintTasks]);
-            }
-            catch (AggregateException ex)
-            {
-                foreach (var innerException in ex.InnerExceptions)
-                {
-                    Console.WriteLine(innerException.Message);
-                }
-            }
-        }
-        private void WaitForQueryTasks()
-        {
-            Console.WriteLine("Waiting for all the queries to finish...");
-            try
-            {
-                Task.WaitAll([.. Args.QueryTasks]);
-            }
-            catch (AggregateException ex)
-            {
-                foreach (var innerException in ex.InnerExceptions)
-                {
-                    Console.WriteLine(innerException.Message);
-                }
             }
         }
         private static void WaitForLogTasks()
@@ -96,12 +65,12 @@ namespace ProjOb_24L_01180781.ConsoleManagement.Commands
                 }
             }
         }
-        private void WaitForReportTasks()
+        private void WaitTasks(string message, List<Task> tasks)
         {
-            Console.WriteLine("Waiting for all the reports to finish...");
+            Console.WriteLine(message);
             try
             {
-                Task.WaitAll([.. Args.ReportTasks]);
+                Task.WaitAll([.. tasks]);
             }
             catch (AggregateException ex)
             {

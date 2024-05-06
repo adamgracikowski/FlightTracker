@@ -2,7 +2,7 @@
   "profiles": {
     "ProjOb_24L_01180781": {
       "commandName": "Project",
-      "commandLineArgs": "100\r\n200"
+      "commandLineArgs": "1\r\n20"
     }
   }
 }

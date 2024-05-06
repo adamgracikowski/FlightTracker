@@ -8,17 +8,17 @@ namespace ProjOb_24L_01180781.Tools
             PartitionBy<UInt64, TValue>(this IDictionary<UInt64, TValue> dictionary, Predicate<KeyValuePair<UInt64, TValue>> predicate)
             where TValue : ILockable
         {
-            var True = new List<KeyValuePair<UInt64, TValue>>();
-            var False = new List<KeyValuePair<UInt64, TValue>>();
+            var kvpTrue = new List<KeyValuePair<UInt64, TValue>>();
+            var kvpFalse = new List<KeyValuePair<UInt64, TValue>>();
             foreach (var kvp in dictionary)
             {
                 lock (kvp.Value.Lock)
                 {
-                    if (predicate(kvp)) True.Add(kvp);
-                    else False.Add(kvp);
+                    if (predicate(kvp)) kvpTrue.Add(kvp);
+                    else kvpFalse.Add(kvp);
                 }
             }
-            return (True, False);
+            return (kvpTrue, kvpFalse);
         }
     }
 }
